@@ -151,6 +151,7 @@ for one PC; other GPU and driver combinations may behave differently.
 
 - Small project specification: [`openspec/spec.md`](openspec/spec.md)
 - Contribution guide: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- Chinese release maintenance: [`docs/CN-EDITION.md`](docs/CN-EDITION.md)
 - Security policy: [`SECURITY.md`](SECURITY.md)
 - Contact: [qcsama@upwell.freeqiye.com](mailto:qcsama@upwell.freeqiye.com)
 

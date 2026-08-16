@@ -1,10 +1,6 @@
-# WakeSoundbar
+﻿# WakeSoundbar
 
-[English](README.md) | [简体中文](README.zh-CN.md) |
-[繁體中文](README.zh-TW.md) | [Español](README.es.md) |
-[Português (Brasil)](README.pt-BR.md) | [Deutsch](README.de.md) |
-[Français](README.fr.md) | [日本語](README.ja.md) | [한국어](README.ko.md) |
-[Русский](README.ru.md)
+> 简体中文专版：安装、卸载和运行提示均为中文。
 
 主显示器和回音壁都走 HDMI 时，Windows 会把回音壁也当成一块屏幕。用扩展模式，
 桌面上会凭空多出一个幽灵屏，鼠标容易跑进去，远程控制也可能切错屏；用复制或镜像，
@@ -33,7 +29,7 @@ WakeSoundbar 自动做的，就是这一步。每次登录时，它找到被移�
 5. 双击 `install.bat`。
 6. Windows 询问是否允许更改时，点击 **是**。
 7. 如果出现数字列表，输入回音壁或功放前面的数字。
-8. 看到 `[SUCCESS]` 后，按任意键关闭窗口。
+8. 看到 `[成功]` 后，按任意键关闭窗口。
 
 到这里就装好了。以后每次登录这个 Windows 账户，WakeSoundbar 都会自动运行。
 
@@ -83,7 +79,7 @@ Get-ScheduledTaskInfo -TaskName WakeSoundbar
 
 1. 双击 `uninstall.bat`。
 2. 同意 Windows 权限请求。
-3. 看到 `[SUCCESS]` 后，按任意键。
+3. 看到 `[成功]` 后，按任意键。
 
 卸载器会删除自动任务和 WakeSoundbar 安装的全部文件。
 
@@ -136,7 +132,6 @@ WakeSoundbar 不会看产品名称猜设备。电脑同时接着 VR 头显、采
 
 - 简要项目规范：[`openspec/spec.md`](openspec/spec.md)
 - 贡献说明：[`CONTRIBUTING.md`](CONTRIBUTING.md)
-- 中文专版维护说明：[`docs/CN-EDITION.md`](docs/CN-EDITION.md)
 - 安全说明：[`SECURITY.md`](SECURITY.md)
 - 联系邮箱：[qcsama@upwell.freeqiye.com](mailto:qcsama@upwell.freeqiye.com)
 

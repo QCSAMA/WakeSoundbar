@@ -65,6 +65,13 @@ endpoint control and MUST describe hardware/driver dependence.
 The batch installer and uninstaller MUST print an explicit success or failure
 message and wait for a keypress before the visible command window exits.
 
+### R9: Chinese release parity
+
+The Simplified Chinese release MUST be derived from the generic implementation
+without a separate logic branch. Its batch wrappers MUST remain ASCII-only so
+Chinese console text cannot be parsed as batch commands. Its release archive
+MUST contain one root directory and exactly the documented five files.
+
 ## Non-goals
 
 - No GUI.
