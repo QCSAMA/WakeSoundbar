@@ -11,6 +11,28 @@ target so that the HDMI link and its audio capabilities can be negotiated.
 
 Licensed under the GNU Affero General Public License v3.0. See [LICENSE](LICENSE).
 
+## The Problem It Solves
+
+WakeSoundbar is intended for the overlap between PC gaming and home-theater
+setups: a desktop PC or HTPC drives a 4K HDR high-refresh display while a
+soundbar or AVR uses another HDMI output for multichannel audio formats such as
+Dolby Atmos and Dolby TrueHD.
+
+Windows normally treats the audio device's EDID as another display. Extending
+the desktop creates a ghost screen that can trap the pointer and confuse remote
+desktop software. Cloning the display can constrain resolution, refresh rate,
+HDR, VRR, or G-Sync on the primary gaming display. S/PDIF avoids the extra
+display path, but it cannot carry the same lossless multichannel formats as
+HDMI.
+
+Configuring the soundbar or AVR as a specialized display removes that target
+from the desktop while preserving its HDMI display and audio capabilities. On
+some GPU and driver combinations, however, that pipeline remains dormant after
+boot. WakeSoundbar re-applies the selected specialized-display path at logon
+without adding it back to the desktop. The soundbar or AVR may be connected to
+a discrete GPU or an integrated GPU as long as Windows exposes the target
+through `Windows.Devices.Display.Core`.
+
 ## Requirements
 
 - Windows 10 version 1809 (build 17763) or newer; Windows 11 is the tested target.
