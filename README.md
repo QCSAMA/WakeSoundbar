@@ -2,30 +2,31 @@
 
 [English](README.md) | [&#31616;&#20307;&#20013;&#25991;](README.zh-CN.md)
 
-Windows has a frustrating habit: an HDMI soundbar or AVR set to
-**Remove display from desktop** may disappear as an audio device after a
-restart. WakeSoundbar nudges that HDMI path awake when you sign in.
+Connect a monitor and a soundbar or AVR to the same PC over HDMI, and Windows
+treats both as displays. Extending the desktop leaves a phantom screen that can
+catch the pointer or confuse remote desktop software. Duplicating or mirroring
+sounds simpler, but the soundbar's video limits can hold back the main display,
+costing you resolution, refresh rate, HDR, VRR, or G-Sync. S/PDIF avoids the
+extra screen, but also gives up the lossless multichannel formats available
+over HDMI.
 
-Set it up once and forget about it. WakeSoundbar runs briefly at logon, then
-exits. No phantom desktop, no Settings window flashing open, and no background
-app left running.
+The cleanest setup is to select the soundbar in Windows and enable
+**Remove display from desktop**. The main display keeps its full capabilities,
+the soundbar no longer takes up desktop space, and the HDMI audio connection
+is preserved. The catch is that, in the setup this tool targets, every reboot
+leaves that removed HDMI path asleep. Until it is woken again, the soundbar
+does not appear as an audio device, so you would otherwise have to open
+Settings and toggle the option by hand after every restart.
 
-It is especially useful on gaming PCs and HTPCs where the main display needs
-to keep 4K, HDR, high refresh rate, and VRR while a second HDMI link carries
-Dolby Atmos, TrueHD, or multichannel LPCM.
+WakeSoundbar automates that last, tedious step. At logon it finds the removed
+soundbar path, wakes it, and exits. You install it once; after that there is no
+Settings window to open, no display mode to toggle, and no background app left
+running.
 
-## Is WakeSoundbar for You?
-
-WakeSoundbar was built for this kind of setup:
-
-- Your soundbar or AVR is connected to a second HDMI output on the PC.
-- Your main display uses features such as 4K, HDR, high refresh rate, VRR, or
-  G-Sync.
-- The soundbar or AVR is set to **Remove display from desktop**.
-- HDMI audio sometimes disappears after a restart.
-
-That second HDMI output can be driven by either a dedicated GPU or integrated
-graphics.
+This is the setup WakeSoundbar was built for: a gaming PC or HTPC keeping 4K,
+HDR, high refresh rate, and VRR on the main display while a second HDMI output
+handles Dolby Atmos, TrueHD, or multichannel LPCM. The soundbar can be connected
+to either a dedicated GPU or integrated graphics.
 
 ## Install
 
@@ -44,18 +45,6 @@ That is it. WakeSoundbar will now run whenever this Windows account logs on.
 Install it while signed in to the administrator account that will use it. If
 Windows asks for credentials for a different administrator, the automatic task
 will be created for that account instead.
-
-## Why Not Extend or Duplicate?
-
-- **Extend desktop** leaves a phantom screen where the pointer and remote
-  desktop software can end up.
-- **Duplicate desktop** can drag the main display down to the soundbar's
-  resolution or refresh limits and interfere with HDR, VRR, or G-Sync.
-- **S/PDIF** avoids the extra display, but it cannot carry the same lossless
-  multichannel audio formats as HDMI.
-
-WakeSoundbar leaves the soundbar removed from the desktop while bringing its
-HDMI link back online.
 
 ## Requirements
 
