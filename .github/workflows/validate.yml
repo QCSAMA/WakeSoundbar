@@ -1,0 +1,51 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  powershell:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Parse PowerShell
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Join-Path $PWD 'WakeSoundbar.ps1'),
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            exit 1
+          }
+
+      - name: Run PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module PSScriptAnalyzer -Scope CurrentUser -Force -ErrorAction Stop
+          $findings = Invoke-ScriptAnalyzer -Path .\WakeSoundbar.ps1 -Severity Error
+          if ($findings) {
+            $findings | Format-List | Out-String | Write-Error
+            exit 1
+          }
+
+      - name: Enforce ASCII source and docs
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem -File -Recurse | Where-Object {
+            $_.FullName -notmatch '\\\.git\\' -and $_.Extension -in @('.ps1', '.bat', '.md', '.txt', '.yml')
+          }
+          foreach ($file in $files) {
+            $bytes = [IO.File]::ReadAllBytes($file.FullName)
+            if ($bytes | Where-Object { $_ -gt 127 }) {
+              Write-Error ("Non-ASCII byte found in {0}" -f $file.FullName)
+              exit 1
+            }
+          }

@@ -1,0 +1,10 @@
+# Windows and editor noise
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+
+# PowerShell and test output
+*.tmp
+TestResults/
+target-id.txt
