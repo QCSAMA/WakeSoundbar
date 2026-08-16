@@ -2,22 +2,26 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-勾选 **从桌面删除显示器** 后，重启电脑，HDMI 回音壁或功放可能没有声音。
-WakeSoundbar 就是为了解决这个问题。
+Windows 有个很烦人的毛病：回音壁或功放明明已经通过 HDMI 接好，也勾选了
+**从桌面删除显示器**，重启后却可能从音频设备里消失。WakeSoundbar 会在登录时
+把这条 HDMI 链路重新唤醒。
 
-只需安装一次。以后每次登录 Windows，它都会自动检查回音壁。它不会增加第二桌面，
-不会打开设置窗口，也不会留下一个常驻程序。
+装一次就行。以后每次登录 Windows，它会短暂运行，处理完马上退出；不会多出幽灵屏，
+不会弹出设置窗口，也不会留下常驻后台。
+
+它特别适合游戏 PC 和 HTPC：主屏继续跑 4K、HDR、高刷新率和 VRR，另一条 HDMI
+专门负责 Dolby Atmos、TrueHD 或多声道 LPCM。
 
 ## 这个工具适合你吗？
 
-如果下面几项都符合，可以尝试 WakeSoundbar：
+WakeSoundbar 就是为下面这种接法做的：
 
-- 回音壁或功放通过第二个 HDMI 接口连接电脑。
+- 电脑的另一个 HDMI 输出接着回音壁或功放。
 - 主显示器需要保留 4K、HDR、高刷新率、VRR 或 G-Sync。
-- 已经为回音壁或功放启用 **从桌面删除显示器**。
+- 回音壁或功放已经设置为 **从桌面删除显示器**。
 - 重启后，HDMI 音频偶尔会消失。
 
-回音壁可以接独立显卡，也可以接核显。
+回音壁接独显或核显都可以。
 
 ## 安装
 
@@ -31,41 +35,43 @@ WakeSoundbar 就是为了解决这个问题。
 7. 如果出现数字列表，输入回音壁或功放前面的数字。
 8. 看到 `[SUCCESS]` 后，按任意键关闭窗口。
 
-以后每次登录这个 Windows 账户，WakeSoundbar 都会自动运行。
+到这里就装好了。以后每次登录这个 Windows 账户，WakeSoundbar 都会自动运行。
 
-请在实际使用 WakeSoundbar 的管理员账户中安装。如果在权限窗口里输入了另一个
-管理员账户，自动任务会属于那个管理员账户。
+请登录实际使用 WakeSoundbar 的管理员账户再安装。如果 Windows 权限窗口要求输入
+另一个管理员账户，自动任务就会建到那个账户名下。
 
-## 它解决了哪些麻烦？
+## 为什么不用扩展或复制屏幕？
 
-- **扩展桌面：** 会多出一个看不见的屏幕，鼠标可能跑进去，远程软件也可能切错屏。
-- **复制桌面：** 可能限制主显示器的分辨率、刷新率、HDR、VRR 或 G-Sync。
-- **S/PDIF：** 不会产生第二屏幕，但无法传输与 HDMI 相同的无损多声道格式。
+- **扩展桌面**会留下一个看不见的幽灵屏，鼠标会跑进去，远程软件也可能切错屏。
+- **复制桌面**可能把主屏拖到回音壁支持的分辨率或刷新率，还会影响 HDR、VRR
+  或 G-Sync。
+- **S/PDIF**虽然没有第二屏幕，但也传不了 HDMI 支持的那些无损多声道格式。
 
-WakeSoundbar 让回音壁继续保持“从桌面删除”的状态，只唤醒它的 HDMI 连接。
+WakeSoundbar 不会把回音壁重新加回桌面，只会唤醒 HDMI 链路。
 
 ## 系统要求
 
-- 已测试系统为 Windows 11。
-- Windows 10 1809 或更高版本也可能可用。
+- Windows 11，这是目前实测过的平台。
+- Windows 10 1809 或更高版本也有可能可用。
 - Windows PowerShell 5.1。
 - 安装和卸载时需要管理员权限。
-- 显卡、驱动、回音壁或功放以及 HDMI 连接需要支持当前设置。
+- 显卡、驱动、回音壁或功放以及 HDMI 连接本身需要支持这种接法。
 
-不同硬件和驱动的表现可能不同。一台电脑成功，不代表所有电脑都能成功。
+最后能不能正常工作，仍然取决于硬件和显卡驱动。一台电脑成功，不代表所有机器
+都会得到同样结果。
 
 ## 如果没有生效
 
-### 安装器提示找不到目标
+### 安装器找不到可用目标
 
 - 直接在这台电脑上运行安装器，不要通过远程桌面运行首次测试。
 - 确认回音壁或功放已经开机，HDMI 已连接。
 - 检查 **从桌面删除显示器** 是否仍然开启。
-- 等待 Windows 识别设备，再运行一次 `install.bat`。
+- 给 Windows 几秒钟识别设备，再运行一次 `install.bat`。
 
 ### 选错了设备
 
-重新运行 `install.bat`。安装器会再次显示数字列表。
+重新运行 `install.bat`。安装器会重新列出当前设备。
 
 ### 检查自动任务
 
@@ -79,8 +85,8 @@ Get-ScheduledTaskInfo -TaskName WakeSoundbar
 安装文件位于 `%ProgramData%\WakeSoundbar`。WakeSoundbar 不会生成日志文件。
 手动运行时，结果会直接显示在终端中。
 
-反馈问题时，请提供 Windows 版本、显卡和驱动、回音壁或功放型号、HDMI 连接方式。
-不要在公开 Issue 中粘贴显示器 ID 或其他私人系统信息。
+提交 Issue 时，请写清 Windows 版本、显卡和驱动、回音壁或功放型号，以及 HDMI
+具体怎么接。显示器 ID 和其他私人系统信息不要贴到公开 Issue。
 
 ## 卸载
 
@@ -88,10 +94,7 @@ Get-ScheduledTaskInfo -TaskName WakeSoundbar
 2. 同意 Windows 权限请求。
 3. 看到 `[SUCCESS]` 后，按任意键。
 
-卸载器会删除自动任务和所有 WakeSoundbar 安装文件。
-
-<details>
-<summary><strong>展开高级用法和技术原理</strong></summary>
+卸载器会删除自动任务和 WakeSoundbar 安装的全部文件。
 
 ## 高级用法
 
@@ -101,14 +104,15 @@ Get-ScheduledTaskInfo -TaskName WakeSoundbar
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1
 ```
 
-常用诊断参数：
+排查问题时还可以使用这些参数：
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -NoSleep
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -IncludeStandardTargets
 ```
 
-`-IncludeStandardTargets` 可能操作普通桌面显示器。它只适合在可控电脑上排查问题。
+`-IncludeStandardTargets` 可能会操作普通桌面显示器。只有坐在电脑前、能够恢复
+显示设置时，才用它排查问题。
 
 直接指定一个已知目标：
 
@@ -121,24 +125,21 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -Stab
 
 ## 工作原理
 
-下面内容只供想了解技术细节的用户参考：
-
-1. 脚本读取 Windows 当前连接的显示目标。
+1. 脚本从 Windows 获取当前连接的显示目标。
 2. 只保留 Windows 标记为 `SpecialPurpose` 的目标。
-3. 如果保存过选择，再按 `StableMonitorId` 进行匹配。
-4. 连接选中的目标并调用 `TryApply`。
+3. 安装时如果选过设备，就用保存的 `StableMonitorId` 再次匹配。
+4. 连接选中的目标，并调用 `TryApply`。
 
-脚本不会根据产品名称猜测设备。这样可以避免误选 VR 头显、采集设备或其他特殊显示器。
+WakeSoundbar 不会看产品名称猜设备。电脑同时接着 VR 头显、采集卡或其他特殊显示器时，
+这样更不容易选错。
 
-WakeSoundbar 使用 `Windows.Devices.Display.Core`。它负责唤醒 HDMI 显示路径，
-不负责解码音频，也不保证某一种音频格式一定可用。
-
-</details>
+底层使用的是 `Windows.Devices.Display.Core`，作用是唤醒 HDMI 显示路径。
+它不负责解码音频，也无法保证每一种显卡、驱动或音频格式都能正常工作。
 
 ## 已测试情况
 
-首个版本发布前，作者在一台 Windows 11 电脑上完成了三次重启和登录测试。
-这只能证明该电脑的设置有效，不代表所有显卡和驱动都能兼容。
+首个版本发布前，作者在自己的 Windows 11 电脑上连续完成了三次完整重启和登录测试。
+这是一次真实硬件验证，但只代表这一台电脑；换一套显卡或驱动，表现仍可能不同。
 
 ## 项目信息
 

@@ -2,23 +2,30 @@
 
 [English](README.md) | [&#31616;&#20307;&#20013;&#25991;](README.zh-CN.md)
 
-WakeSoundbar fixes a Windows problem: an HDMI soundbar or AVR may stay asleep
-after a restart when **Remove display from desktop** is enabled.
+Windows has a frustrating habit: an HDMI soundbar or AVR set to
+**Remove display from desktop** may disappear as an audio device after a
+restart. WakeSoundbar nudges that HDMI path awake when you sign in.
 
-Install it once. WakeSoundbar checks the soundbar at every logon. It does not
-add a second desktop, open Settings, or leave an app running in the background.
+Set it up once and forget about it. WakeSoundbar runs briefly at logon, then
+exits. No phantom desktop, no Settings window flashing open, and no background
+app left running.
 
-## Is This for You?
+It is especially useful on gaming PCs and HTPCs where the main display needs
+to keep 4K, HDR, high refresh rate, and VRR while a second HDMI link carries
+Dolby Atmos, TrueHD, or multichannel LPCM.
 
-WakeSoundbar may help if all of these are true:
+## Is WakeSoundbar for You?
 
-- Your soundbar or AVR is connected to a second HDMI output.
+WakeSoundbar was built for this kind of setup:
+
+- Your soundbar or AVR is connected to a second HDMI output on the PC.
 - Your main display uses features such as 4K, HDR, high refresh rate, VRR, or
   G-Sync.
-- You enabled **Remove display from desktop** for the soundbar or AVR.
+- The soundbar or AVR is set to **Remove display from desktop**.
 - HDMI audio sometimes disappears after a restart.
 
-The soundbar may be connected to a dedicated GPU or an integrated GPU.
+That second HDMI output can be driven by either a dedicated GPU or integrated
+graphics.
 
 ## Install
 
@@ -32,48 +39,47 @@ The soundbar may be connected to a dedicated GPU or an integrated GPU.
 7. If a numbered list appears, enter the number for the soundbar or AVR.
 8. Wait for `[SUCCESS]`, then press any key to close the window.
 
-WakeSoundbar will now run automatically when this Windows account logs on.
+That is it. WakeSoundbar will now run whenever this Windows account logs on.
 
-Use the administrator account that will run WakeSoundbar. If another
-administrator account is entered at the permission prompt, the automatic task
-will belong to that account instead.
+Install it while signed in to the administrator account that will use it. If
+Windows asks for credentials for a different administrator, the automatic task
+will be created for that account instead.
 
-## What It Avoids
+## Why Not Extend or Duplicate?
 
-- **Extend desktop:** creates an invisible second screen, traps the pointer,
-  and can confuse remote desktop software.
-- **Duplicate desktop:** can limit the main display's resolution, refresh rate,
-  HDR, VRR, or G-Sync.
-- **S/PDIF:** avoids a second display, but cannot carry the same lossless
-  multichannel formats as HDMI.
+- **Extend desktop** leaves a phantom screen where the pointer and remote
+  desktop software can end up.
+- **Duplicate desktop** can drag the main display down to the soundbar's
+  resolution or refresh limits and interfere with HDR, VRR, or G-Sync.
+- **S/PDIF** avoids the extra display, but it cannot carry the same lossless
+  multichannel audio formats as HDMI.
 
-WakeSoundbar keeps the soundbar removed from the desktop and wakes only its
-HDMI connection.
+WakeSoundbar leaves the soundbar removed from the desktop while bringing its
+HDMI link back online.
 
 ## Requirements
 
-- Windows 11 is the tested system.
-- Windows 10 version 1809 or newer may also work.
+- Windows 11 (tested).
+- Windows 10 version 1809 or newer may work as well.
 - Windows PowerShell 5.1.
-- Administrator permission during installation and removal.
-- Compatible GPU, driver, soundbar or AVR, and HDMI connection.
+- Administrator access for installation and removal.
+- A GPU, driver, soundbar or AVR, and HDMI connection that support this setup.
 
-Hardware and drivers differ. A setup that works on one PC may not work on
-another PC.
+Compatibility ultimately depends on the hardware and display driver. Success
+on one PC does not guarantee the same result on every system.
 
 ## If It Does Not Work
 
-### The installer says no eligible target was found
+### The installer cannot find an eligible target
 
 - Run the installer directly on the PC, not through Remote Desktop.
 - Make sure the soundbar or AVR is on and connected over HDMI.
 - Check that **Remove display from desktop** is still enabled.
-- Wait a few seconds for Windows to detect the device, then run `install.bat`
-  again.
+- Give Windows a few seconds to detect the device, then run `install.bat` again.
 
 ### The wrong device was selected
 
-Run `install.bat` again. The installer will show the numbered list again.
+Run `install.bat` again. The installer will offer a fresh device list.
 
 ### Check the automatic task
 
@@ -87,9 +93,9 @@ Get-ScheduledTaskInfo -TaskName WakeSoundbar
 Installed files are stored in `%ProgramData%\WakeSoundbar`. WakeSoundbar does
 not create log files. A manual run prints the result in the terminal.
 
-When reporting a problem, include the Windows version, GPU and driver, soundbar
-or AVR model, and HDMI connection layout. Do not post monitor IDs or other
-private system details in a public issue.
+When opening an issue, include your Windows version, GPU and driver, soundbar
+or AVR model, and how the HDMI cables are connected. Leave monitor IDs and
+other private system details out of public issues.
 
 ## Uninstall
 
@@ -97,10 +103,7 @@ private system details in a public issue.
 2. Approve the Windows permission prompt.
 3. Wait for `[SUCCESS]`, then press any key.
 
-This removes the automatic task and all installed WakeSoundbar files.
-
-<details>
-<summary><strong>Advanced use and technical details</strong></summary>
+This removes the automatic task and every file installed by WakeSoundbar.
 
 ## Advanced Use
 
@@ -110,15 +113,15 @@ Run the script manually:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1
 ```
 
-Useful diagnostic options:
+For troubleshooting, these options are also available:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -NoSleep
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -IncludeStandardTargets
 ```
 
-`-IncludeStandardTargets` may act on normal desktop displays. Use it only for
-diagnosis on a controlled PC.
+`-IncludeStandardTargets` may act on ordinary desktop displays. Use it only
+while you are at the PC and can restore its display settings.
 
 To select one known target directly:
 
@@ -131,26 +134,24 @@ errors, and `2` when a target was found but could not be activated.
 
 ## How It Works
 
-For users who want the technical details:
+1. The script asks Windows for the currently connected display targets.
+2. It keeps only targets Windows marks as `SpecialPurpose`.
+3. If you selected a device during installation, it matches the saved
+   `StableMonitorId`.
+4. It connects that target and calls `TryApply`.
 
-1. The script lists connected Windows display targets.
-2. It keeps only targets marked `SpecialPurpose` by Windows.
-3. It optionally matches the saved `StableMonitorId`.
-4. It connects the selected target and calls `TryApply`.
+WakeSoundbar never guesses from a product name. That matters on PCs with a VR
+headset, capture card, or another special display attached.
 
-The script does not select devices by product name. This avoids guessing when
-VR headsets, capture devices, or other special displays are connected.
-
-WakeSoundbar uses `Windows.Devices.Display.Core`. It wakes the HDMI display
-path; it does not decode audio or guarantee a specific audio format.
-
-</details>
+Under the hood it uses `Windows.Devices.Display.Core` to wake the HDMI display
+path. It does not decode audio, and it cannot promise that a particular GPU,
+driver, or audio format will work.
 
 ## Tested Status
 
-Before the first release, the author tested the setup through three Windows 11
-restart and logon cycles on one PC. This confirms that setup only. It does not
-guarantee support for every GPU or driver.
+Before the first release, the author's Windows 11 setup completed three full
+restart-and-logon tests successfully. That is a real hardware test, but only
+for one PC; other GPU and driver combinations may behave differently.
 
 ## Project Information
 
