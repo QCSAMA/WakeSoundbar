@@ -1,5 +1,7 @@
 # WakeSoundbar
 
+[English](README.md) | [&#31616;&#20307;&#20013;&#25991;](README.zh-CN.md)
+
 WakeSoundbar is a small Windows PowerShell utility that re-applies a display
 path for a connected `SpecialPurpose` display target at user logon. It is
 intended for HDMI-connected soundbars and AVRs configured in Windows as
@@ -46,12 +48,16 @@ does not guarantee the same result on another machine.
 
 ## Quick Start
 
-1. Configure the soundbar/AVR display in Windows so it is removed from the desktop.
-2. Run `install.bat` as administrator.
-3. If multiple special-purpose targets exist, choose the soundbar/AVR by number
+1. Download and extract the ZIP from the
+   [latest release](https://github.com/QCSAMA/WakeSoundbar/releases/latest).
+2. In Windows 11, open **Settings > System > Display > Advanced display**,
+   select the soundbar or AVR, and enable **Remove display from desktop**.
+3. Double-click `install.bat`. It requests one UAC elevation and continues in
+   the elevated window.
+4. If multiple special-purpose targets exist, choose the soundbar/AVR by number
    when prompted. The choice is saved for future logons.
-4. Review the initial result printed in the installer window.
-5. The task runs for the installing user at logon.
+5. Review the initial result printed in the installer window.
+6. The task runs for the elevated installing account at logon.
 
 The installer keeps its window open after completion. Press any key after
 reviewing the success or failure message.
@@ -60,6 +66,11 @@ To remove the task and installed files, run `uninstall.bat` as administrator.
 
 The uninstaller also prints an explicit result and waits for a keypress before
 closing.
+
+The installer is intended to be run from the administrator account that will
+use WakeSoundbar. A standard account can supply different administrator
+credentials at the UAC prompt, but the scheduled task will then belong to that
+administrator account.
 
 ## Manual Run
 
@@ -112,6 +123,38 @@ reported `UsageKind`, not the Windows UI label alone.
 The observed behavior of a particular GPU driver, DWM session, soundbar, or
 AVR is not guaranteed by the WinRT API. Remote Desktop sessions and changing
 display topology can make acquisition fail.
+
+## Troubleshooting
+
+### No eligible target is found
+
+- Run the initial test in a local interactive session, not through Remote
+  Desktop.
+- Confirm that the soundbar or AVR is powered on and connected over HDMI.
+- Confirm that Windows reports it as removed from the desktop.
+- Run `install.bat` again after the display stack has detected the device.
+
+### A different target should be selected
+
+Run `install.bat` again. Interactive installation ignores the saved selection
+and presents the currently eligible targets again.
+
+### Check the scheduled task
+
+```powershell
+Get-ScheduledTask -TaskName WakeSoundbar
+Get-ScheduledTaskInfo -TaskName WakeSoundbar
+```
+
+Installed files, including `target-id.txt`, are stored in
+`%ProgramData%\WakeSoundbar`. WakeSoundbar does not create runtime log files;
+manual runs print diagnostics directly in the terminal.
+
+## Tested Status
+
+Before the initial release, the author verified the target setup across three
+Windows 11 reboot and logon cycles on one machine. This is a hardware-specific
+validation, not a claim of universal GPU or driver compatibility.
 
 ## OpenSpec
 

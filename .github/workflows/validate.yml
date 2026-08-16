@@ -36,13 +36,17 @@ jobs:
             exit 1
           }
 
-      - name: Enforce ASCII source and docs
+      - name: Enforce ASCII source and English docs
         shell: pwsh
         run: |
+          $localizedDocs = @('README.zh-CN.md')
           $files = Get-ChildItem -File -Recurse | Where-Object {
             $_.FullName -notmatch '\\\.git\\' -and $_.Extension -in @('.ps1', '.bat', '.md', '.txt', '.yml')
           }
           foreach ($file in $files) {
+            if ($localizedDocs -contains $file.Name) {
+              continue
+            }
             $bytes = [IO.File]::ReadAllBytes($file.FullName)
             if ($bytes | Where-Object { $_ -gt 127 }) {
               Write-Error ("Non-ASCII byte found in {0}" -f $file.FullName)

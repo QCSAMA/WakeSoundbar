@@ -9,6 +9,7 @@ Before opening a pull request:
 2. Test installation, logon execution, and uninstallation on a disposable test account.
 3. Record Windows build, GPU driver, HDMI topology, and result for hardware changes.
 4. Do not commit monitor identifiers or private system details.
+5. Keep `README.md` and `README.zh-CN.md` aligned when behavior changes.
 
 Hardware-dependent changes should include a manual test note. Do not claim
 universal support from a single machine.
