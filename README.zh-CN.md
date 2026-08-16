@@ -2,61 +2,100 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-WakeSoundbar 是一个轻量、无图形界面的 Windows PowerShell 工具。它会在用户登录时，
-重新应用已连接的 `SpecialPurpose` 显示目标路径，适用于在 Windows 中设置为
-“从桌面删除显示器”的 HDMI 回音壁和 AVR。
+勾选 **从桌面删除显示器** 后，重启电脑，HDMI 回音壁或功放可能没有声音。
+WakeSoundbar 就是为了解决这个问题。
 
-项目使用 Windows `Windows.Devices.Display.Core` API。它不直接控制音频终端，
-而是请求显示子系统激活目标，使 HDMI 链路及其音频能力能够重新完成协商。
+只需安装一次。以后每次登录 Windows，它都会自动检查回音壁。它不会增加第二桌面，
+不会打开设置窗口，也不会留下一个常驻程序。
 
-本项目采用 GNU Affero General Public License v3.0，详见 [LICENSE](LICENSE)。
+## 这个工具适合你吗？
 
-## 解决的问题
+如果下面几项都符合，可以尝试 WakeSoundbar：
 
-WakeSoundbar 面向 PC 游戏和家庭影院用户的重叠场景：桌面 PC 或 HTPC 驱动
-4K HDR 高刷新率主显示器，同时通过另一条 HDMI 连接回音壁或 AVR，以使用
-Dolby Atmos、Dolby TrueHD 等多声道音频格式。
+- 回音壁或功放通过第二个 HDMI 接口连接电脑。
+- 主显示器需要保留 4K、HDR、高刷新率、VRR 或 G-Sync。
+- 已经为回音壁或功放启用 **从桌面删除显示器**。
+- 重启后，HDMI 音频偶尔会消失。
 
-Windows 通常会把音频设备的 EDID 当作另一台显示器。扩展桌面会产生幽灵屏，
-可能困住鼠标指针并干扰远程桌面软件；复制显示器则可能限制主游戏显示器的
-分辨率、刷新率、HDR、VRR 或 G-Sync。S/PDIF 虽然不会产生额外显示路径，
-但无法承载与 HDMI 相同的无损多声道格式。
+回音壁可以接独立显卡，也可以接核显。
 
-将回音壁或 AVR 配置为专用显示器，可以在保留 HDMI 显示和音频能力的同时，
-把该目标从桌面移除。但在某些显卡和驱动组合上，这条管线会在开机后保持休眠。
-WakeSoundbar 会在登录时重新应用选定的专用显示路径，并且不会把它重新加入桌面。
-只要 Windows 能通过 `Windows.Devices.Display.Core` 暴露目标，回音壁或 AVR
-既可以连接独立显卡，也可以连接核显。
-
-## 系统要求
-
-- Windows 10 1809（内部版本 17763）或更高；主要测试平台为 Windows 11。
-- Windows PowerShell 5.1。
-- 已连接并配置为专用显示器的显示目标。
-- 安装和注册计划任务需要管理员权限。
-- 显卡、驱动、回音壁或 AVR 以及 HDMI 拓扑支持目标模式。
-
-功能依赖具体硬件和驱动。在一台机器上成功，不代表所有设备组合都能得到相同结果。
-
-## 快速开始
+## 安装
 
 1. 从[最新 Release](https://github.com/QCSAMA/WakeSoundbar/releases/latest)
    下载 ZIP 并解压。
-2. 在 Windows 11 中打开 **设置 > 系统 > 显示 > 高级显示**，选择回音壁或 AVR，
-   启用 **从桌面删除显示器**。
-3. 双击 `install.bat`。脚本会请求一次 UAC 提权，并在管理员窗口中继续。
-4. 如果存在多个专用显示目标，按提示输入数字选择回音壁或 AVR。选择结果会用于以后登录。
-5. 检查安装窗口中的首次运行结果。
-6. 此后计划任务会在完成提权安装的账户登录时运行。
+2. 打开回音壁或功放，并确认 HDMI 已连接。
+3. 打开 **设置 > 系统 > 显示 > 高级显示**。
+4. 选择回音壁或功放，启用 **从桌面删除显示器**。
+5. 双击 `install.bat`。
+6. Windows 询问是否允许更改时，点击 **是**。
+7. 如果出现数字列表，输入回音壁或功放前面的数字。
+8. 看到 `[SUCCESS]` 后，按任意键关闭窗口。
 
-安装器无论成功或失败都会显示明确结果，并等待按任意键后退出。
+以后每次登录这个 Windows 账户，WakeSoundbar 都会自动运行。
 
-卸载时双击 `uninstall.bat`，同意 UAC 提权即可。卸载器同样会显示结果并等待按键。
+请在实际使用 WakeSoundbar 的管理员账户中安装。如果在权限窗口里输入了另一个
+管理员账户，自动任务会属于那个管理员账户。
 
-安装器应当从实际使用 WakeSoundbar 的管理员账户运行。标准账户可以在 UAC 窗口中
-输入另一个管理员账户的凭据，但计划任务随后会属于该管理员账户。
+## 它解决了哪些麻烦？
 
-## 手动运行
+- **扩展桌面：** 会多出一个看不见的屏幕，鼠标可能跑进去，远程软件也可能切错屏。
+- **复制桌面：** 可能限制主显示器的分辨率、刷新率、HDR、VRR 或 G-Sync。
+- **S/PDIF：** 不会产生第二屏幕，但无法传输与 HDMI 相同的无损多声道格式。
+
+WakeSoundbar 让回音壁继续保持“从桌面删除”的状态，只唤醒它的 HDMI 连接。
+
+## 系统要求
+
+- 已测试系统为 Windows 11。
+- Windows 10 1809 或更高版本也可能可用。
+- Windows PowerShell 5.1。
+- 安装和卸载时需要管理员权限。
+- 显卡、驱动、回音壁或功放以及 HDMI 连接需要支持当前设置。
+
+不同硬件和驱动的表现可能不同。一台电脑成功，不代表所有电脑都能成功。
+
+## 如果没有生效
+
+### 安装器提示找不到目标
+
+- 直接在这台电脑上运行安装器，不要通过远程桌面运行首次测试。
+- 确认回音壁或功放已经开机，HDMI 已连接。
+- 检查 **从桌面删除显示器** 是否仍然开启。
+- 等待 Windows 识别设备，再运行一次 `install.bat`。
+
+### 选错了设备
+
+重新运行 `install.bat`。安装器会再次显示数字列表。
+
+### 检查自动任务
+
+打开 PowerShell，运行：
+
+```powershell
+Get-ScheduledTask -TaskName WakeSoundbar
+Get-ScheduledTaskInfo -TaskName WakeSoundbar
+```
+
+安装文件位于 `%ProgramData%\WakeSoundbar`。WakeSoundbar 不会生成日志文件。
+手动运行时，结果会直接显示在终端中。
+
+反馈问题时，请提供 Windows 版本、显卡和驱动、回音壁或功放型号、HDMI 连接方式。
+不要在公开 Issue 中粘贴显示器 ID 或其他私人系统信息。
+
+## 卸载
+
+1. 双击 `uninstall.bat`。
+2. 同意 Windows 权限请求。
+3. 看到 `[SUCCESS]` 后，按任意键。
+
+卸载器会删除自动任务和所有 WakeSoundbar 安装文件。
+
+<details>
+<summary><strong>展开高级用法和技术原理</strong></summary>
+
+## 高级用法
+
+手动运行脚本：
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1
@@ -69,84 +108,43 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -NoSl
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -IncludeStandardTargets
 ```
 
-`-IncludeStandardTargets` 仅用于受控环境中的诊断，可能影响普通桌面显示器。
-正常流程只处理 `SpecialPurpose` 目标。多显示设备环境还可以通过
-`-StableMonitorId` 显式限制目标。
+`-IncludeStandardTargets` 可能操作普通桌面显示器。它只适合在可控电脑上排查问题。
 
-交互安装检测到多个 `SpecialPurpose` 目标时，会显示数字菜单，并把选中的稳定 ID
-保存到安装目录下的 `target-id.txt`。隐藏运行的登录任务不会等待输入。
-也可以手动指定目标：
+直接指定一个已知目标：
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -StableMonitorId RSR66621_0C_07E5_C6
 ```
 
-重新运行 `install.bat` 会忽略旧选择并重新显示当前可用目标，无需手动编辑 ID 文件。
-
-脚本退出码：`0` 表示成功或无需操作，`1` 表示初始化或平台错误，`2` 表示发现了
-符合条件的目标，但没有成功激活。部分成功返回 `0`，具体结果会打印在终端中。
-
-`No eligible SpecialPurpose targets found` 表示当前 Windows API 快照中没有符合条件的目标。
-已经处于活动状态的专用显示器仍可能被视为候选目标；实际判定依据是 API 返回的
-`UsageKind`，而不是 Windows 设置界面中的设备名称。
+退出码：`0` 表示成功或无需操作，`1` 表示启动或系统错误，`2` 表示找到了目标，
+但没有成功激活。
 
 ## 工作原理
 
-1. 枚举当前显示目标。
-2. 筛选已连接的 `SpecialPurpose` 目标，并可选按 `StableMonitorId` 限制。
-3. 获取目标所有权并创建空的 `DisplayState`。
-4. 连接目标并调用 `TryApply`。
-5. 显示子系统尚未暴露目标时进行有限次数的重新枚举，最后释放 `DisplayManager`。
+下面内容只供想了解技术细节的用户参考：
 
-具体显卡驱动、DWM 会话、回音壁或 AVR 的行为不由 WinRT API 保证。
-远程桌面会话和正在变化的显示拓扑可能导致获取目标失败。
+1. 脚本读取 Windows 当前连接的显示目标。
+2. 只保留 Windows 标记为 `SpecialPurpose` 的目标。
+3. 如果保存过选择，再按 `StableMonitorId` 进行匹配。
+4. 连接选中的目标并调用 `TryApply`。
 
-## 故障排查
+脚本不会根据产品名称猜测设备。这样可以避免误选 VR 头显、采集设备或其他特殊显示器。
 
-### 找不到符合条件的目标
+WakeSoundbar 使用 `Windows.Devices.Display.Core`。它负责唤醒 HDMI 显示路径，
+不负责解码音频，也不保证某一种音频格式一定可用。
 
-- 在本地交互会话中运行首次测试，不要通过远程桌面运行。
-- 确认回音壁或 AVR 已开机，并通过 HDMI 连接。
-- 确认 Windows 已将它设置为“从桌面删除显示器”。
-- 等待显示子系统识别设备后重新运行 `install.bat`。
+</details>
 
-### 需要切换目标
+## 已测试情况
 
-重新运行 `install.bat`。交互安装会忽略已保存的选择，并重新列出当前符合条件的目标。
+首个版本发布前，作者在一台 Windows 11 电脑上完成了三次重启和登录测试。
+这只能证明该电脑的设置有效，不代表所有显卡和驱动都能兼容。
 
-### 检查计划任务
+## 项目信息
 
-```powershell
-Get-ScheduledTask -TaskName WakeSoundbar
-Get-ScheduledTaskInfo -TaskName WakeSoundbar
-```
+- 简要项目规范：[`openspec/spec.md`](openspec/spec.md)
+- 贡献说明：[`CONTRIBUTING.md`](CONTRIBUTING.md)
+- 安全说明：[`SECURITY.md`](SECURITY.md)
+- 联系邮箱：[qcsama@upwell.freeqiye.com](mailto:qcsama@upwell.freeqiye.com)
 
-程序和 `target-id.txt` 位于 `%ProgramData%\WakeSoundbar`。WakeSoundbar 不创建运行日志；
-手动执行时，诊断信息会直接打印到终端。
-
-## 已测试状态
-
-首个版本发布前，作者在一台 Windows 11 机器上完成了三次重启和登录周期验证。
-这属于特定硬件环境的验证结果，不代表所有显卡和驱动都具备通用兼容性。
-
-## OpenSpec
-
-项目范围、要求和非目标记录在 [`openspec/spec.md`](openspec/spec.md)。
-该规范有意保持精简：这是单脚本工具，不是服务或通用显示管理器。
-
-## 开发检查
-
-仓库中的 GitHub Actions 会解析 PowerShell 脚本、运行 PSScriptAnalyzer，
-并检查源代码和英文文档是否保持 ASCII。硬件激活必须手动测试，
-因为托管 CI 运行器没有目标显示拓扑。
-
-## 联系方式
-
-项目相关问题可发送邮件至
-[qcsama@upwell.freeqiye.com](mailto:qcsama@upwell.freeqiye.com)。
-安全问题请优先参照 [`SECURITY.md`](SECURITY.md) 使用私密报告渠道。
-
-## 许可证说明
-
-本项目使用 AGPL-3.0-only 许可证。AGPL 允许商业使用和分发，但必须遵守许可证条件。
-网络源代码提供义务适用于许可证所述的受覆盖修改版本；准确条款以 `LICENSE` 正文为准。
+WakeSoundbar 使用 AGPL-3.0-only 许可证。完整条款见 [LICENSE](LICENSE)。

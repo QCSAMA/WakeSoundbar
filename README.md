@@ -2,182 +2,162 @@
 
 [English](README.md) | [&#31616;&#20307;&#20013;&#25991;](README.zh-CN.md)
 
-WakeSoundbar is a small Windows PowerShell utility that re-applies a display
-path for a connected `SpecialPurpose` display target at user logon. It is
-intended for HDMI-connected soundbars and AVRs configured in Windows as
-displays removed from the desktop.
+WakeSoundbar fixes a Windows problem: an HDMI soundbar or AVR may stay asleep
+after a restart when **Remove display from desktop** is enabled.
 
-The project uses the Windows `Windows.Devices.Display.Core` API. It does not
-control an audio endpoint directly; it asks the display stack to activate the
-target so that the HDMI link and its audio capabilities can be negotiated.
+Install it once. WakeSoundbar checks the soundbar at every logon. It does not
+add a second desktop, open Settings, or leave an app running in the background.
 
-Licensed under the GNU Affero General Public License v3.0. See [LICENSE](LICENSE).
+## Is This for You?
 
-## The Problem It Solves
+WakeSoundbar may help if all of these are true:
 
-WakeSoundbar is intended for the overlap between PC gaming and home-theater
-setups: a desktop PC or HTPC drives a 4K HDR high-refresh display while a
-soundbar or AVR uses another HDMI output for multichannel audio formats such as
-Dolby Atmos and Dolby TrueHD.
+- Your soundbar or AVR is connected to a second HDMI output.
+- Your main display uses features such as 4K, HDR, high refresh rate, VRR, or
+  G-Sync.
+- You enabled **Remove display from desktop** for the soundbar or AVR.
+- HDMI audio sometimes disappears after a restart.
 
-Windows normally treats the audio device's EDID as another display. Extending
-the desktop creates a ghost screen that can trap the pointer and confuse remote
-desktop software. Cloning the display can constrain resolution, refresh rate,
-HDR, VRR, or G-Sync on the primary gaming display. S/PDIF avoids the extra
-display path, but it cannot carry the same lossless multichannel formats as
-HDMI.
+The soundbar may be connected to a dedicated GPU or an integrated GPU.
 
-Configuring the soundbar or AVR as a specialized display removes that target
-from the desktop while preserving its HDMI display and audio capabilities. On
-some GPU and driver combinations, however, that pipeline remains dormant after
-boot. WakeSoundbar re-applies the selected specialized-display path at logon
-without adding it back to the desktop. The soundbar or AVR may be connected to
-a discrete GPU or an integrated GPU as long as Windows exposes the target
-through `Windows.Devices.Display.Core`.
-
-## Requirements
-
-- Windows 10 version 1809 (build 17763) or newer; Windows 11 is the tested target.
-- Windows PowerShell 5.1.
-- A connected display target configured as a special-purpose display.
-- Administrator privileges for installation and scheduled-task registration.
-- A GPU, driver, soundbar/AVR, and HDMI topology that support the desired mode.
-
-The feature is hardware- and driver-dependent. A successful run on one machine
-does not guarantee the same result on another machine.
-
-## Quick Start
+## Install
 
 1. Download and extract the ZIP from the
    [latest release](https://github.com/QCSAMA/WakeSoundbar/releases/latest).
-2. In Windows 11, open **Settings > System > Display > Advanced display**,
-   select the soundbar or AVR, and enable **Remove display from desktop**.
-3. Double-click `install.bat`. It requests one UAC elevation and continues in
-   the elevated window.
-4. If multiple special-purpose targets exist, choose the soundbar/AVR by number
-   when prompted. The choice is saved for future logons.
-5. Review the initial result printed in the installer window.
-6. The task runs for the elevated installing account at logon.
+2. Turn on the soundbar or AVR and connect it over HDMI.
+3. Open **Settings > System > Display > Advanced display**.
+4. Select the soundbar or AVR and enable **Remove display from desktop**.
+5. Double-click `install.bat`.
+6. When Windows asks for permission, select **Yes**.
+7. If a numbered list appears, enter the number for the soundbar or AVR.
+8. Wait for `[SUCCESS]`, then press any key to close the window.
 
-The installer keeps its window open after completion. Press any key after
-reviewing the success or failure message.
+WakeSoundbar will now run automatically when this Windows account logs on.
 
-To remove the task and installed files, run `uninstall.bat` as administrator.
+Use the administrator account that will run WakeSoundbar. If another
+administrator account is entered at the permission prompt, the automatic task
+will belong to that account instead.
 
-The uninstaller also prints an explicit result and waits for a keypress before
-closing.
+## What It Avoids
 
-The installer is intended to be run from the administrator account that will
-use WakeSoundbar. A standard account can supply different administrator
-credentials at the UAC prompt, but the scheduled task will then belong to that
-administrator account.
+- **Extend desktop:** creates an invisible second screen, traps the pointer,
+  and can confuse remote desktop software.
+- **Duplicate desktop:** can limit the main display's resolution, refresh rate,
+  HDR, VRR, or G-Sync.
+- **S/PDIF:** avoids a second display, but cannot carry the same lossless
+  multichannel formats as HDMI.
 
-## Manual Run
+WakeSoundbar keeps the soundbar removed from the desktop and wakes only its
+HDMI connection.
 
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1
-```
+## Requirements
 
-Useful diagnostics:
+- Windows 11 is the tested system.
+- Windows 10 version 1809 or newer may also work.
+- Windows PowerShell 5.1.
+- Administrator permission during installation and removal.
+- Compatible GPU, driver, soundbar or AVR, and HDMI connection.
 
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -NoSleep
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -IncludeStandardTargets
-```
+Hardware and drivers differ. A setup that works on one PC may not work on
+another PC.
 
-`-IncludeStandardTargets` is intentionally opt-in and may affect ordinary
-display targets. The normal path only considers `SpecialPurpose` targets.
-For a multi-display machine, `-StableMonitorId` can restrict the run to a
-known monitor identifier.
+## If It Does Not Work
 
-If more than one connected `SpecialPurpose` target is found during an
-interactive install, the tool shows a numbered menu and saves the chosen
-stable ID in `target-id.txt` under the installation directory. A hidden logon
-run never prompts. Manual explicit selection remains available:
+### The installer says no eligible target was found
 
-Running `install.bat` again deliberately starts a fresh interactive selection,
-so you can switch to a different target without editing the ID file.
+- Run the installer directly on the PC, not through Remote Desktop.
+- Make sure the soundbar or AVR is on and connected over HDMI.
+- Check that **Remove display from desktop** is still enabled.
+- Wait a few seconds for Windows to detect the device, then run `install.bat`
+  again.
 
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -StableMonitorId RSR66621_0C_07E5_C6
-```
+### The wrong device was selected
 
-The script exits with code `0` for success or a no-op, `1` for initialization
-or platform errors, and `2` when eligible targets were found but none could be
-activated. Partial success returns `0` and is reported in the terminal.
+Run `install.bat` again. The installer will show the numbered list again.
 
-`No eligible SpecialPurpose targets found` means the current Windows API
-snapshot did not expose a matching target. An already active special-purpose
-display may still be reported as an eligible target; the decisive value is the
-reported `UsageKind`, not the Windows UI label alone.
+### Check the automatic task
 
-## How It Works
-
-1. Enumerates current display targets.
-2. Filters connected `SpecialPurpose` targets, optionally by `StableMonitorId`.
-3. Acquires each target and creates an empty `DisplayState`.
-4. Connects the target and calls `TryApply`.
-5. Re-enumerates briefly if the display stack has not exposed the target yet,
-   then releases `DisplayManager` ownership.
-
-The observed behavior of a particular GPU driver, DWM session, soundbar, or
-AVR is not guaranteed by the WinRT API. Remote Desktop sessions and changing
-display topology can make acquisition fail.
-
-## Troubleshooting
-
-### No eligible target is found
-
-- Run the initial test in a local interactive session, not through Remote
-  Desktop.
-- Confirm that the soundbar or AVR is powered on and connected over HDMI.
-- Confirm that Windows reports it as removed from the desktop.
-- Run `install.bat` again after the display stack has detected the device.
-
-### A different target should be selected
-
-Run `install.bat` again. Interactive installation ignores the saved selection
-and presents the currently eligible targets again.
-
-### Check the scheduled task
+Open PowerShell and run:
 
 ```powershell
 Get-ScheduledTask -TaskName WakeSoundbar
 Get-ScheduledTaskInfo -TaskName WakeSoundbar
 ```
 
-Installed files, including `target-id.txt`, are stored in
-`%ProgramData%\WakeSoundbar`. WakeSoundbar does not create runtime log files;
-manual runs print diagnostics directly in the terminal.
+Installed files are stored in `%ProgramData%\WakeSoundbar`. WakeSoundbar does
+not create log files. A manual run prints the result in the terminal.
+
+When reporting a problem, include the Windows version, GPU and driver, soundbar
+or AVR model, and HDMI connection layout. Do not post monitor IDs or other
+private system details in a public issue.
+
+## Uninstall
+
+1. Double-click `uninstall.bat`.
+2. Approve the Windows permission prompt.
+3. Wait for `[SUCCESS]`, then press any key.
+
+This removes the automatic task and all installed WakeSoundbar files.
+
+<details>
+<summary><strong>Advanced use and technical details</strong></summary>
+
+## Advanced Use
+
+Run the script manually:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1
+```
+
+Useful diagnostic options:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -NoSleep
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -IncludeStandardTargets
+```
+
+`-IncludeStandardTargets` may act on normal desktop displays. Use it only for
+diagnosis on a controlled PC.
+
+To select one known target directly:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -StableMonitorId RSR66621_0C_07E5_C6
+```
+
+Exit codes are `0` for success or no action needed, `1` for startup or platform
+errors, and `2` when a target was found but could not be activated.
+
+## How It Works
+
+For users who want the technical details:
+
+1. The script lists connected Windows display targets.
+2. It keeps only targets marked `SpecialPurpose` by Windows.
+3. It optionally matches the saved `StableMonitorId`.
+4. It connects the selected target and calls `TryApply`.
+
+The script does not select devices by product name. This avoids guessing when
+VR headsets, capture devices, or other special displays are connected.
+
+WakeSoundbar uses `Windows.Devices.Display.Core`. It wakes the HDMI display
+path; it does not decode audio or guarantee a specific audio format.
+
+</details>
 
 ## Tested Status
 
-Before the initial release, the author verified the target setup across three
-Windows 11 reboot and logon cycles on one machine. This is a hardware-specific
-validation, not a claim of universal GPU or driver compatibility.
+Before the first release, the author tested the setup through three Windows 11
+restart and logon cycles on one PC. This confirms that setup only. It does not
+guarantee support for every GPU or driver.
 
-## OpenSpec
+## Project Information
 
-The small project contract and non-goals are recorded in
-[`openspec/spec.md`](openspec/spec.md). It is deliberately short: this is a
-single-script utility, not a service or a general display manager.
+- Small project specification: [`openspec/spec.md`](openspec/spec.md)
+- Contribution guide: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- Security policy: [`SECURITY.md`](SECURITY.md)
+- Contact: [qcsama@upwell.freeqiye.com](mailto:qcsama@upwell.freeqiye.com)
 
-## Development Checks
-
-The repository includes a GitHub Actions workflow that parses the PowerShell
-script and runs PSScriptAnalyzer. Hardware activation remains a manual test
-because hosted CI runners do not have the target display topology.
-
-## Contact
-
-For project-related inquiries, email
-[qcsama@upwell.freeqiye.com](mailto:qcsama@upwell.freeqiye.com).
-Security issues should follow the private reporting guidance in
-[`SECURITY.md`](SECURITY.md).
-
-## License Notes
-
-This project is licensed under AGPL-3.0-only. AGPL permits commercial use and
-distribution subject to its conditions. Network source-availability terms
-apply to covered modified versions as described by the license; consult the
-canonical text in `LICENSE` for the exact obligations.
+WakeSoundbar is licensed under AGPL-3.0-only. See [LICENSE](LICENSE) for the
+full license text.
