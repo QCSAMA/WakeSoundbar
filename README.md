@@ -1,6 +1,11 @@
 # WakeSoundbar
 
-[English](README.md) | [&#31616;&#20307;&#20013;&#25991;](README.zh-CN.md)
+[English](README.md) | [&#31616;&#20307;&#20013;&#25991;](README.zh-CN.md) |
+[&#32321;&#39636;&#20013;&#25991;](README.zh-TW.md) | [Espa&#241;ol](README.es.md) |
+[Portugu&#234;s (Brasil)](README.pt-BR.md) | [Deutsch](README.de.md) |
+[Fran&#231;ais](README.fr.md) | [&#26085;&#26412;&#35486;](README.ja.md) |
+[&#54620;&#44397;&#50612;](README.ko.md) |
+[&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;](README.ru.md)
 
 Connect a monitor and a soundbar or AVR to the same PC over HDMI, and Windows
 treats both as displays. Extending the desktop leaves a phantom screen that can

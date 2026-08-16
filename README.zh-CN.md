@@ -1,6 +1,10 @@
 # WakeSoundbar
 
-[English](README.md) | [简体中文](README.zh-CN.md)
+[English](README.md) | [简体中文](README.zh-CN.md) |
+[繁體中文](README.zh-TW.md) | [Español](README.es.md) |
+[Português (Brasil)](README.pt-BR.md) | [Deutsch](README.de.md) |
+[Français](README.fr.md) | [日本語](README.ja.md) | [한국어](README.ko.md) |
+[Русский](README.ru.md)
 
 主显示器和回音壁都走 HDMI 时，Windows 会把回音壁也当成一块屏幕。用扩展模式，
 桌面上会凭空多出一个幽灵屏，鼠标容易跑进去，远程控制也可能切错屏；用复制或镜像，
