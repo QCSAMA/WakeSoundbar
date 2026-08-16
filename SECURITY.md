@@ -10,7 +10,8 @@ identifiers.
 ## Reporting
 
 Please report security issues privately through the repository's configured
-security advisory channel. If that channel is not enabled, open a minimal issue
-without sensitive details and request a private contact route.
+security advisory channel or email
+[qcsama@upwell.freeqiye.com](mailto:qcsama@upwell.freeqiye.com). Do not include
+sensitive details in a public issue.
 
 Supported security fixes target the latest published release.

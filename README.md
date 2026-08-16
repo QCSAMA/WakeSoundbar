@@ -125,6 +125,13 @@ The repository includes a GitHub Actions workflow that parses the PowerShell
 script and runs PSScriptAnalyzer. Hardware activation remains a manual test
 because hosted CI runners do not have the target display topology.
 
+## Contact
+
+For project-related inquiries, email
+[qcsama@upwell.freeqiye.com](mailto:qcsama@upwell.freeqiye.com).
+Security issues should follow the private reporting guidance in
+[`SECURITY.md`](SECURITY.md).
+
 ## License Notes
 
 This project is licensed under AGPL-3.0-only. AGPL permits commercial use and
