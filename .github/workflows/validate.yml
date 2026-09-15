@@ -40,7 +40,7 @@ jobs:
       - name: Enforce ASCII source and English docs
         shell: pwsh
         run: |
-          $localizedDocs = @(
+          $localizedFiles = @(
             'README.zh-CN.md',
             'README.zh-TW.md',
             'README.es.md',
@@ -49,13 +49,16 @@ jobs:
             'README.fr.md',
             'README.ja.md',
             'README.ko.md',
-            'README.ru.md'
+            'README.ru.md',
+            'locales/zh-CN/README.md',
+            'locales/zh-CN/WakeSoundbar.ps1'
           )
           $files = Get-ChildItem -File -Recurse | Where-Object {
             $_.FullName -notmatch '\\\.git\\' -and $_.Extension -in @('.ps1', '.bat', '.md', '.txt', '.yml')
           }
           foreach ($file in $files) {
-            if ($localizedDocs -contains $file.Name) {
+            $relativePath = $file.FullName.Substring($PWD.Path.Length + 1).Replace('\', '/')
+            if ($localizedFiles -contains $relativePath) {
               continue
             }
             $bytes = [IO.File]::ReadAllBytes($file.FullName)
@@ -64,3 +67,7 @@ jobs:
               exit 1
             }
           }
+
+      - name: Build Chinese release archive
+        shell: pwsh
+        run: .\tools\Build-CNRelease.ps1 -Version 1.0.0

@@ -54,6 +54,36 @@ function Test-AsciiBatchFile {
     }
 }
 
+function Test-Base64MessageFile {
+    param([Parameter(Mandatory)] [string]$Path)
+
+    $text = [Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($Path))
+    if ($text -notmatch '(?im)^:say[ \t]*\r?$' -or $text -notmatch 'FromBase64String') {
+        throw "Batch file is missing the Base64 message helper: $Path"
+    }
+
+    $callLines = @(
+        [regex]::Split($text, '\r?\n') |
+            Where-Object { $_ -match '^[ \t]*call[ \t]+:say[ \t]+' }
+    )
+    if ($callLines.Count -eq 0) {
+        throw "Batch file has no Base64 messages: $Path"
+    }
+
+    $utf8 = [Text.UTF8Encoding]::new($false, $true)
+    foreach ($line in $callLines) {
+        if ($line -notmatch '^[ \t]*call[ \t]+:say[ \t]+"([A-Za-z0-9+/=]+)"[ \t]*$') {
+            throw "Batch file has a malformed Base64 message call: $Path"
+        }
+        try {
+            $bytes = [Convert]::FromBase64String($Matches[1])
+            $null = $utf8.GetString($bytes)
+        } catch {
+            throw "Batch file contains an invalid UTF-8 Base64 message: $Path"
+        }
+    }
+}
+
 function Test-Utf8BomFile {
     param([Parameter(Mandatory)] [string]$Path)
 
@@ -94,6 +124,8 @@ Test-Utf8BomFile (Join-Path $localeRoot 'README.md')
 Test-WindowsPowerShellSyntax $cnScript
 Test-AsciiBatchFile (Join-Path $localeRoot 'install.bat')
 Test-AsciiBatchFile (Join-Path $localeRoot 'uninstall.bat')
+Test-Base64MessageFile (Join-Path $localeRoot 'install.bat')
+Test-Base64MessageFile (Join-Path $localeRoot 'uninstall.bat')
 
 New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
 New-Item -ItemType Directory -Path $stageRoot -Force | Out-Null
