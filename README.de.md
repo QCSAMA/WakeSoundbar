@@ -6,6 +6,26 @@
 [Français](README.fr.md) | [日本語](README.ja.md) | [한국어](README.ko.md) |
 [Русский](README.ru.md)
 
+WakeSoundbar ist ein kleines Windows-11-Tool, das den HDMI-Ton einer Soundbar
+oder eines AV-Receivers nach der Anmeldung wiederherstellt, wenn das Gerät mit
+**Anzeige vom Desktop entfernen** eingerichtet ist. Es weckt den entfernten
+HDMI-Anzeigepfad auf, damit das Audiogerät wieder erscheint, ohne die
+4K-, HDR-, Bildwiederholraten- oder VRR-Einstellungen des Hauptmonitors zu
+verändern und ohne einen Hintergrundprozess laufen zu lassen.
+
+**Geeignet für**
+
+- Gaming-PCs oder HTPCs
+- Soundbars oder AV-Receiver mit HDMI-Anschluss
+- Systeme, bei denen der HDMI-Ton nach einem Neustart verschwindet
+
+**Nicht geeignet für**
+
+- Bluetooth-, USB- oder S/PDIF-Audio
+- Konfigurationen ohne **Anzeige vom Desktop entfernen**
+
+## Warum es das gibt
+
 Schließt du Monitor und Soundbar oder AV-Receiver per HDMI an denselben PC an, behandelt Windows beide als Displays. Der erweiterte Desktop erzeugt einen unsichtbaren Geisterbildschirm, auf dem der Mauszeiger landen kann und der Remote-Desktop-Software verwirrt. Duplizieren oder Spiegeln klingt einfacher, aber die Bildgrenzen der Soundbar können den Hauptmonitor ausbremsen und Auflösung, Bildwiederholrate, HDR, VRR oder G-Sync beeinträchtigen. S/PDIF umgeht den zusätzlichen Bildschirm, verzichtet aber auch auf die verlustfreien Mehrkanalformate von HDMI.
 
 Die sauberste Lösung ist, die Soundbar in Windows auszuwählen und **Anzeige vom Desktop entfernen** zu aktivieren. Der Hauptmonitor behält seine vollständigen Funktionen, die Soundbar belegt keinen Platz auf dem Desktop und die HDMI-Audioverbindung bleibt erhalten. Der Haken: In der Konfiguration, für die dieses Tool gedacht ist, bleibt der entfernte HDMI-Pfad nach jedem Neustart inaktiv. Bis er wieder geweckt wird, taucht die Soundbar nicht als Audiogerät auf. Ohne WakeSoundbar müsstest du deshalb nach jedem Neustart die Einstellungen öffnen und die Option von Hand umschalten.

@@ -6,6 +6,26 @@
 [Français](README.fr.md) | [日本語](README.ja.md) | [한국어](README.ko.md) |
 [Русский](README.ru.md)
 
+WakeSoundbar est un petit utilitaire pour Windows 11 qui rétablit l'audio HDMI
+d'une barre de son ou d'un ampli AV après la connexion, lorsque l'appareil est
+configuré avec **Supprimer l'écran du bureau**. Il réveille la liaison HDMI
+supprimée afin que le périphérique audio réapparaisse, sans modifier les
+réglages 4K, HDR, haute fréquence de rafraîchissement ou VRR de l'écran
+principal et sans laisser de processus en arrière-plan.
+
+**Idéal pour**
+
+- Les PC de jeu ou les HTPC
+- Les barres de son ou amplis AV connectés en HDMI
+- Les systèmes où l'audio HDMI disparaît après un redémarrage
+
+**Pas destiné à**
+
+- L'audio Bluetooth, USB ou S/PDIF
+- Les configurations qui n'utilisent pas **Supprimer l'écran du bureau**
+
+## Pourquoi cet outil existe
+
 Branchez l'écran et la barre de son ou l'ampli AV au même PC en HDMI : Windows considère les deux comme des écrans. Le mode Étendre crée un écran fantôme qui peut attirer le pointeur ou perturber le Bureau à distance. Dupliquer ou mettre en miroir semble plus simple, mais les limites vidéo de la barre peuvent brider l'écran principal et affecter la résolution, la fréquence de rafraîchissement, le HDR, le VRR ou le G-Sync. Le S/PDIF évite l'écran supplémentaire, mais il ne transporte pas les mêmes formats multicanaux sans perte que le HDMI.
 
 La configuration la plus propre consiste à sélectionner la barre dans Windows et à activer **Supprimer l'écran du bureau**. L'écran principal garde toutes ses capacités, la barre ne prend pas de place sur le bureau et la liaison audio HDMI reste configurée. Le problème est que, dans la configuration visée par cet outil, chaque redémarrage laisse cette liaison HDMI supprimée en veille. Tant qu'elle n'est pas réveillée, la barre n'apparaît pas comme périphérique audio ; sans WakeSoundbar, il faudrait ouvrir les Paramètres et changer l'option à la main après chaque redémarrage.

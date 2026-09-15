@@ -6,6 +6,26 @@
 [Français](README.fr.md) | [日本語](README.ja.md) | [한국어](README.ko.md) |
 [Русский](README.ru.md)
 
+WakeSoundbar es una utilidad ligera para Windows 11 que restaura el audio HDMI
+de una barra de sonido o un receptor AV al iniciar sesión cuando el dispositivo
+está configurado con **Quitar pantalla del escritorio**. Reactiva la ruta HDMI
+retirada para que vuelva a aparecer el dispositivo de audio, sin cambiar la
+configuración 4K, HDR, alta frecuencia de actualización o VRR de la pantalla
+principal y sin dejar un proceso en segundo plano.
+
+**Ideal para**
+
+- PCs gaming o HTPC
+- Barras de sonido o receptores AV conectados por HDMI
+- Sistemas en los que el audio HDMI desaparece después de reiniciar
+
+**No está pensado para**
+
+- Audio por Bluetooth, USB o S/PDIF
+- Configuraciones que no usan **Quitar pantalla del escritorio**
+
+## Por qué existe
+
 Conecta el monitor y la barra de sonido o el receptor AV al mismo PC por HDMI y Windows trata los dos como pantallas. El modo extendido deja una pantalla fantasma que puede atrapar el puntero o confundir al Escritorio remoto. Duplicar o reflejar parece más sencillo, pero los límites de vídeo de la barra pueden frenar la pantalla principal y afectar a la resolución, la frecuencia de actualización, HDR, VRR o G-Sync. S/PDIF evita la pantalla adicional, pero también renuncia a los formatos multicanal sin pérdida que permite HDMI.
 
 La configuración más limpia es seleccionar la barra de sonido en Windows y activar **Quitar pantalla del escritorio**. La pantalla principal conserva todas sus capacidades, la barra no ocupa espacio en el escritorio y la conexión de audio HDMI queda preparada. El problema es que, en la configuración para la que se creó esta herramienta, cada reinicio deja dormida esa ruta HDMI retirada. Hasta despertarla, la barra no aparece como dispositivo de audio; sin WakeSoundbar tendrías que abrir Configuración y cambiar la opción manualmente después de cada reinicio.

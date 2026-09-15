@@ -6,6 +6,26 @@
 [Français](README.fr.md) | [日本語](README.ja.md) | [한국어](README.ko.md) |
 [Русский](README.ru.md)
 
+O WakeSoundbar é um utilitário leve para Windows 11 que restaura o áudio HDMI
+da soundbar ou do receiver AV ao entrar no sistema quando o dispositivo está
+configurado como **Remover tela da área de trabalho**. Ele reativa o caminho HDMI
+removido para que o dispositivo de áudio volte a aparecer, sem alterar as
+configurações 4K, HDR, alta taxa de atualização ou VRR da tela principal e sem
+manter um processo em segundo plano.
+
+**Ideal para**
+
+- PCs de jogos ou HTPCs
+- Soundbars ou receivers AV conectados por HDMI
+- Sistemas em que o áudio HDMI desaparece depois de reiniciar
+
+**Não é indicado para**
+
+- Áudio por Bluetooth, USB ou S/PDIF
+- Configurações que não usam **Remover tela da área de trabalho**
+
+## Por que isso existe
+
 Conecte o monitor e a soundbar ou o receiver AV ao mesmo PC por HDMI e o Windows trata os dois como telas. No modo estendido, aparece uma tela fantasma que pode prender o cursor ou confundir o acesso remoto. Duplicar ou espelhar parece mais simples, mas as limitações de vídeo da soundbar podem reduzir a resolução e a taxa de atualização da tela principal e atrapalhar HDR, VRR ou G-Sync. O S/PDIF evita a tela extra, mas também abre mão dos formatos multicanal sem perdas que o HDMI oferece.
 
 A configuração mais limpa é selecionar a soundbar no Windows e ativar **Remover tela da área de trabalho**. A tela principal mantém todos os recursos, a soundbar não ocupa espaço na área de trabalho e a conexão de áudio HDMI fica preservada. O problema é que, na configuração que este projeto atende, todo reinício deixa esse caminho HDMI removido adormecido. Até ser reativada, a soundbar não aparece como dispositivo de áudio; sem o WakeSoundbar, seria preciso abrir as Configurações e alternar essa opção manualmente depois de cada reinício.

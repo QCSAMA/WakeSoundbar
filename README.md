@@ -7,6 +7,25 @@
 [&#54620;&#44397;&#50612;](README.ko.md) |
 [&#1056;&#1091;&#1089;&#1089;&#1082;&#1080;&#1081;](README.ru.md)
 
+WakeSoundbar is a small Windows 11 utility that restores HDMI audio for a
+soundbar or AVR after logon when the device is configured as **Remove display
+from desktop**. It wakes the removed HDMI display path so the audio device
+returns, without changing the main display's 4K, HDR, high-refresh-rate, or
+VRR settings and without leaving a background process running.
+
+**Best for**
+
+- Gaming PCs or HTPCs
+- HDMI-connected soundbars or AV receivers
+- Systems where HDMI audio disappears after a reboot
+
+**Not for**
+
+- Bluetooth, USB, or S/PDIF audio
+- Setups that do not use **Remove display from desktop**
+
+## Why
+
 Connect a monitor and a soundbar or AVR to the same PC over HDMI, and Windows
 treats both as displays. Extending the desktop leaves a phantom screen that can
 catch the pointer or confuse remote desktop software. Duplicating or mirroring
