@@ -11,6 +11,8 @@ Before opening a pull request:
 4. Do not commit monitor identifiers or private system details.
 5. Keep `README.md` and `README.zh-CN.md` aligned when behavior changes.
 6. When changing Chinese release files, follow [`docs/CN-EDITION.md`](docs/CN-EDITION.md).
+7. Run `tests/Test-Runtime.ps1`, `tests/Test-Setup.ps1` and the CN release builder.
+   Regression tests replace display and scheduler operations with fixtures.
 
 Hardware-dependent changes should include a manual test note. Do not claim
 universal support from a single machine.

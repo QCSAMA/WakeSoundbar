@@ -45,12 +45,12 @@ WakeSoundbar는 바로 그 번거로운 마지막 단계를 자동화합니다. 
 
 이제 끝입니다. 이 Windows 계정으로 로그인할 때마다 WakeSoundbar가 자동으로 실행됩니다.
 
-WakeSoundbar를 사용할 관리자 계정으로 로그인한 상태에서 설치하세요. 다른 관리자 계정의 자격 증명을 입력하면 자동 작업은 그 계정에 만들어집니다.
+현재 데스크톱 관리자 계정으로 설치하세요. 다른 계정으로 권한을 높이면 중단됩니다. 계정 이름은 변경하지 않습니다.
 
 ## 요구 사항
 
-- Windows 11 (테스트 완료).
-- Windows 10 version 1809 이상에서도 작동할 수 있습니다.
+- 데스크톱에서 디스플레이 제거 옵션이 필요합니다. 이 PC의 검증 환경: Windows 11 Pro for Workstations.
+- Windows 10 20H1 Enterprise / Pro for Workstations에서 이미 문서화되었으며 24H2부터 생긴 기능이 아닙니다. [Microsoft](https://learn.microsoft.com/en-us/previous-versions/windows-insider/archive/new-in-20H1#specialized-displays-in-windows-10-enterprise-and-windows-10-pro-for-workstations)
 - Windows PowerShell 5.1.
 - 설치와 제거에 필요한 관리자 권한.
 - 이 구성과 호환되는 GPU, 드라이버, 사운드바 또는 AV 리시버, HDMI 연결.
@@ -79,7 +79,7 @@ Get-ScheduledTask -TaskName WakeSoundbar
 Get-ScheduledTaskInfo -TaskName WakeSoundbar
 ```
 
-설치 파일은 `%ProgramData%\WakeSoundbar`에 있습니다. WakeSoundbar는 로그 파일을 만들지 않으며, 수동 실행 결과는 터미널에 바로 표시됩니다.
+%ProgramData%\WakeSoundbar: `install.log`: 하드웨어 테스트, `last-run.log`: 최근 예약 작업. 매번 덮어쓰며 공유 전 개인정보를 삭제하세요.
 
 Issue를 열 때 Windows 버전, GPU와 드라이버, 사운드바 또는 리시버 모델, HDMI 연결 방식을 적어 주세요. 모니터 ID나 개인 시스템 정보는 공개하지 마세요.
 
@@ -114,7 +114,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -Incl
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -StableMonitorId RSR66621_0C_07E5_C6
 ```
 
-종료 코드는 `0`이 성공 또는 작업 불필요, `1`이 시작 또는 플랫폼 오류, `2`가 대상을 찾았지만 활성화하지 못한 경우입니다.
+`0`: 모두 성공, `1`: 시작/설정 오류, `2`: 하나 이상 실패, `3`: 적합한 대상 없음.
 
 ## 작동 원리
 

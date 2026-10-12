@@ -46,12 +46,12 @@ WakeSoundbar автоматизирует именно этот последни
 
 Готово. WakeSoundbar будет запускаться при каждом входе этой учётной записи Windows.
 
-Устанавливайте программу из той учётной записи администратора, которая будет её использовать. Если в окне разрешений указать данные другого администратора, автоматическая задача будет создана для этой учётной записи.
+Используйте администратора текущего рабочего стола. Другая запись при повышении прав остановит установку. Имена записей не меняются.
 
 ## Требования
 
-- Windows 11 (протестировано).
-- Windows 10 версии 1809 или новее также может подойти.
+- Требуется Remove display from desktop. Локальная проверка: Windows 11 Pro for Workstations.
+- Описано ещё для Windows 10 20H1 Enterprise / Pro for Workstations, до 24H2. [Microsoft](https://learn.microsoft.com/en-us/previous-versions/windows-insider/archive/new-in-20H1#specialized-displays-in-windows-10-enterprise-and-windows-10-pro-for-workstations)
 - Windows PowerShell 5.1.
 - Права администратора для установки и удаления.
 - Совместимые видеокарта, драйвер, саундбар или AV-ресивер и HDMI-подключение.
@@ -80,7 +80,7 @@ Get-ScheduledTask -TaskName WakeSoundbar
 Get-ScheduledTaskInfo -TaskName WakeSoundbar
 ```
 
-Установленные файлы находятся в `%ProgramData%\WakeSoundbar`. WakeSoundbar не создаёт лог-файлы; при ручном запуске результат выводится прямо в терминал.
+%ProgramData%\WakeSoundbar: `install.log`: проверка оборудования; `last-run.log`: последний запуск задачи. Перезаписываются; удалите личные данные перед публикацией.
 
 В Issue укажите версию Windows, видеокарту и драйвер, модель саундбара или ресивера и схему HDMI-подключения. Не публикуйте ID мониторов и другие личные данные системы.
 
@@ -115,7 +115,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -Incl
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -StableMonitorId RSR66621_0C_07E5_C6
 ```
 
-Коды выхода: `0` — успех или отсутствие действий, `1` — ошибка запуска или платформы, `2` — цель найдена, но активировать её не удалось.
+`0`: все активированы; `1`: ошибка запуска/настройки; `2`: хотя бы одна цель не активирована; `3`: нет подходящих целей.
 
 ## Как это работает
 

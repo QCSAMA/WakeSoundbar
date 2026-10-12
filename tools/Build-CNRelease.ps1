@@ -2,7 +2,7 @@
 [CmdletBinding()]
 param(
     [ValidatePattern('^[0-9]+\.[0-9]+\.[0-9]+$')]
-    [string]$Version = '1.0.0',
+    [string]$Version = '1.1.0',
 
     [string]$OutputDirectory
 )
@@ -24,7 +24,7 @@ $stageDirectory = Join-Path ([IO.Path]::GetTempPath()) ("WakeSoundbar-cn-" + [gu
 $stageRoot = Join-Path $stageDirectory $packageRootName
 
 $localeFiles = @('WakeSoundbar.ps1', 'install.bat', 'uninstall.bat', 'README.md')
-$packageFiles = @($localeFiles + 'LICENSE')
+$packageFiles = @($localeFiles + 'LICENSE' + 'Setup-WakeSoundbar.ps1')
 
 function Assert-FileExists {
     param([Parameter(Mandatory)] [string]$Path)
@@ -117,6 +117,8 @@ foreach ($name in $localeFiles) {
     Assert-FileExists (Join-Path $localeRoot $name)
 }
 Assert-FileExists (Join-Path $repoRoot 'LICENSE')
+Assert-FileExists (Join-Path $repoRoot 'Setup-WakeSoundbar.ps1')
+Test-WindowsPowerShellSyntax (Join-Path $repoRoot 'Setup-WakeSoundbar.ps1')
 
 $cnScript = Join-Path $localeRoot 'WakeSoundbar.ps1'
 Test-Utf8BomFile $cnScript
@@ -135,6 +137,14 @@ try {
         Copy-Item -LiteralPath (Join-Path $localeRoot $name) -Destination (Join-Path $stageRoot $name)
     }
     Copy-Item -LiteralPath (Join-Path $repoRoot 'LICENSE') -Destination (Join-Path $stageRoot 'LICENSE')
+    Copy-Item -LiteralPath (Join-Path $repoRoot 'Setup-WakeSoundbar.ps1') -Destination (Join-Path $stageRoot 'Setup-WakeSoundbar.ps1')
+    # The compact CN archive does not include every repository document.
+    $readmePath = Join-Path $stageRoot 'README.md'
+    $readme = [IO.File]::ReadAllText($readmePath)
+    foreach ($link in @('README.md', 'README.zh-CN.md', 'README.zh-TW.md', 'README.es.md', 'README.pt-BR.md', 'README.de.md', 'README.fr.md', 'README.ja.md', 'README.ko.md', 'README.ru.md', 'CONTRIBUTING.md', 'SECURITY.md', 'docs/CN-EDITION.md', 'openspec/spec.md')) {
+        $readme = $readme.Replace('](' + $link + ')', '](https://github.com/QCSAMA/WakeSoundbar/blob/v' + $Version + '/' + $link + ')')
+    }
+    [IO.File]::WriteAllText($readmePath, $readme, [Text.UTF8Encoding]::new($true))
 
     Compress-Archive -LiteralPath $stageRoot -DestinationPath $archivePath -CompressionLevel Optimal -Force
 
@@ -144,7 +154,7 @@ try {
         $entries = @($archive.Entries | ForEach-Object { $_.FullName.Replace('\', '/') })
         $expectedEntries = @($packageFiles | ForEach-Object { "$packageRootName/$_" })
         if (@(Compare-Object -ReferenceObject $expectedEntries -DifferenceObject $entries).Count -ne 0) {
-            throw 'CN archive contents do not match the expected five files.'
+            throw 'CN archive contents do not match the expected six files.'
         }
     } finally {
         $archive.Dispose()

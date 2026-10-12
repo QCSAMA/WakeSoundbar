@@ -1,62 +1,27 @@
 @echo off
 :: SPDX-License-Identifier: AGPL-3.0-only
-:: Copyright (C) 2026 QCSAMA
-setlocal
-title WakeSoundbar Uninstaller
-
-set "INSTALL_DIR=%ProgramData%\WakeSoundbar"
-
+setlocal EnableExtensions
+title WakeSoundbar Uninstall
+set "WakeSoundbarWrapperPath=%~f0"
 fltmc >nul 2>&1
 if errorlevel 1 (
     echo [INFO] Requesting administrative privileges...
-    powershell.exe -NoProfile -Command "$process = Start-Process -FilePath '%~f0' -Verb RunAs -Wait -PassThru; exit $process.ExitCode"
+    powershell.exe -NoProfile -Command "$ErrorActionPreference='Stop'; try { $p=Start-Process -FilePath $env:WakeSoundbarWrapperPath -Verb RunAs -Wait -PassThru; exit $p.ExitCode } catch { Write-Host $_.Exception.Message; exit 1 }"
     if errorlevel 1 (
-        echo [FAILED] The elevated uninstaller did not complete successfully.
+        echo [FAILED] Elevation or setup failed.
         pause
         exit /b 1
     )
     exit /b 0
 )
-
-echo ===================================================
-echo   WakeSoundbar Uninstaller
-echo ===================================================
-echo.
-
-if not exist "%INSTALL_DIR%\.wakeSoundbar-install" (
-    echo [FAILED] Installation marker not found. Nothing was removed.
-    set "RESULT=1"
-    goto :failure
+set "SETUP=%~dp0Setup-WakeSoundbar.ps1"
+if not exist "%SETUP%" set "SETUP=%~dp0..\..\Setup-WakeSoundbar.ps1"
+if not exist "%SETUP%" (
+    echo [FAILED] Setup-WakeSoundbar.ps1 is missing. Extract the entire release ZIP.
+    pause
+    exit /b 1
 )
-
-echo [1/2] Removing scheduled task...
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ^
-  "$ErrorActionPreference='Stop';" ^
-  "$task=Get-ScheduledTask -TaskName 'WakeSoundbar' -ErrorAction SilentlyContinue;" ^
-  "if ($null -ne $task) { Stop-ScheduledTask -TaskName 'WakeSoundbar' -ErrorAction SilentlyContinue; Unregister-ScheduledTask -TaskName 'WakeSoundbar' -Confirm:$false }"
-if errorlevel 1 (
-    echo [FAILED] Failed to remove the scheduled task.
-    set "RESULT=1"
-    goto :failure
-)
-
-echo [2/2] Removing WakeSoundbar files...
-rmdir /s /q "%INSTALL_DIR%"
-if errorlevel 1 (
-    echo [FAILED] Failed to remove %INSTALL_DIR%.
-    set "RESULT=1"
-    goto :failure
-)
-
-echo [SUCCESS] WakeSoundbar has been removed.
-echo.
-pause
-exit /b 0
-
-:failure
-echo.
-echo [FAILED] WakeSoundbar was not completely removed.
-echo Check the message above and retry from an elevated command prompt.
-echo.
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%SETUP%" -Mode Uninstall -SourceDirectory "%~dp0."
+set "RESULT=%errorlevel%"
 pause
 exit /b %RESULT%

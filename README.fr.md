@@ -47,12 +47,12 @@ L'outil est pensé pour les PC de jeu et les HTPC qui gardent la 4K, le HDR, une
 
 C'est terminé. WakeSoundbar s'exécutera à chaque connexion de ce compte Windows.
 
-Installez-le depuis le compte administrateur qui l'utilisera. Si Windows demande les identifiants d'un autre administrateur, la tâche automatique sera créée pour cet autre compte.
+Utilisez le compte administrateur du bureau actuel. Un autre compte élevé arrête l’installation. Aucun compte n’est renommé.
 
 ## Prérequis
 
-- Windows 11 (testé).
-- Windows 10 version 1809 ou ultérieure peut également fonctionner.
+- Remove display from desktop doit être disponible. Test local : Windows 11 Pro for Workstations.
+- Documenté dès Windows 10 20H1 pour Enterprise / Pro for Workstations, avant 24H2. [Microsoft](https://learn.microsoft.com/en-us/previous-versions/windows-insider/archive/new-in-20H1#specialized-displays-in-windows-10-enterprise-and-windows-10-pro-for-workstations)
 - Windows PowerShell 5.1.
 - Des droits administrateur pour l'installation et la désinstallation.
 - Un GPU, un pilote, une barre ou un ampli AV et une liaison HDMI compatibles avec cette configuration.
@@ -81,7 +81,7 @@ Get-ScheduledTask -TaskName WakeSoundbar
 Get-ScheduledTaskInfo -TaskName WakeSoundbar
 ```
 
-Les fichiers sont installés dans `%ProgramData%\WakeSoundbar`. WakeSoundbar ne crée pas de fichiers journaux ; une exécution manuelle affiche le résultat dans le terminal.
+%ProgramData%\WakeSoundbar: `install.log` : test matériel ; `last-run.log` : dernière tâche. Écrasés à chaque exécution ; retirez les données privées avant partage.
 
 Pour ouvrir un issue, indiquez la version de Windows, le GPU et son pilote, le modèle de la barre ou de l'ampli et le câblage HDMI. Ne publiez pas d'identifiants de moniteur ni d'autres informations privées.
 
@@ -116,7 +116,7 @@ Sélectionner directement une cible connue :
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -StableMonitorId RSR66621_0C_07E5_C6
 ```
 
-Les codes de sortie sont `0` en cas de succès ou d'absence d'action nécessaire, `1` en cas d'erreur de démarrage ou de plateforme et `2` lorsqu'une cible a été trouvée mais n'a pas pu être activée.
+`0` : toutes activées ; `1` : erreur de démarrage/configuration ; `2` : au moins une cible en échec ; `3` : aucune cible admissible.
 
 ## Fonctionnement
 

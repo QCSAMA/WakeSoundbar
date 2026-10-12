@@ -47,12 +47,12 @@ Gedacht ist das für Gaming-PCs und HTPCs: 4K, HDR, hohe Bildwiederholrate und V
 
 Das war es. WakeSoundbar läuft ab jetzt bei jeder Anmeldung dieses Windows-Kontos.
 
-Installiere es in dem Administratorkonto, das WakeSoundbar später verwenden soll. Wenn Windows die Zugangsdaten eines anderen Administrators verlangt, wird die automatische Aufgabe für dieses andere Konto erstellt.
+Verwende das Administratorkonto des aktuellen Desktops. Ein anderes erhöhtes Konto bricht Setup ab. Kontonamen bleiben unverändert.
 
 ## Voraussetzungen
 
-- Windows 11 (getestet).
-- Windows 10 ab Version 1809 kann ebenfalls funktionieren.
+- Remove display from desktop muss verfügbar sein. Lokal getestet: Windows 11 Pro for Workstations.
+- Seit Windows 10 20H1 für Enterprise / Pro for Workstations dokumentiert, vor 24H2. [Microsoft](https://learn.microsoft.com/en-us/previous-versions/windows-insider/archive/new-in-20H1#specialized-displays-in-windows-10-enterprise-and-windows-10-pro-for-workstations)
 - Windows PowerShell 5.1.
 - Administratorrechte für Installation und Deinstallation.
 - Eine GPU, ein Treiber, eine Soundbar oder ein AV-Receiver und eine HDMI-Verbindung, die diese Konfiguration unterstützen.
@@ -81,7 +81,7 @@ Get-ScheduledTask -TaskName WakeSoundbar
 Get-ScheduledTaskInfo -TaskName WakeSoundbar
 ```
 
-Die installierten Dateien liegen unter `%ProgramData%\WakeSoundbar`. WakeSoundbar legt keine Logdateien an; ein manueller Lauf zeigt das Ergebnis direkt im Terminal.
+%ProgramData%\WakeSoundbar: `install.log`: Hardwaretest; `last-run.log`: letzter Aufgabenlauf. Werden überschrieben; private Daten vor dem Teilen entfernen.
 
 Wenn du ein Issue eröffnest, nenne Windows-Version, GPU und Treiber, das Soundbar- oder Receiver-Modell und die HDMI-Verkabelung. Veröffentliche keine Monitor-IDs oder andere privaten Systemdaten.
 
@@ -116,7 +116,7 @@ Ein bekanntes Ziel direkt auswählen:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -StableMonitorId RSR66621_0C_07E5_C6
 ```
 
-Die Exit-Codes sind `0` für Erfolg oder keine Aktion nötig, `1` für Start- oder Plattformfehler und `2`, wenn ein Ziel gefunden, aber nicht aktiviert werden konnte.
+`0`: alle aktiviert; `1`: Start-/Konfigurationsfehler; `2`: mindestens ein Ziel fehlgeschlagen; `3`: kein geeignetes Ziel.
 
 ## Funktionsweise
 

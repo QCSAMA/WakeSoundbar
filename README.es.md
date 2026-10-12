@@ -47,12 +47,12 @@ Está pensado para un PC de juegos o un HTPC que mantiene 4K, HDR, alta frecuenc
 
 Listo. WakeSoundbar se ejecutará cada vez que esta cuenta de Windows inicie sesión.
 
-Instálalo desde la cuenta de administrador que va a usarlo. Si Windows pide las credenciales de otro administrador, la tarea automática se creará para esa otra cuenta.
+Usa la cuenta administradora del escritorio actual; otra cuenta elevada detiene la instalación. No se renombran cuentas.
 
 ## Requisitos
 
-- Windows 11 (probado).
-- Windows 10 versión 1809 o posterior también puede funcionar.
+- Debe estar disponible Remove display from desktop. Prueba local: Windows 11 Pro for Workstations.
+- Documentado desde Windows 10 20H1 para Enterprise / Pro for Workstations, antes de 24H2. [Microsoft](https://learn.microsoft.com/en-us/previous-versions/windows-insider/archive/new-in-20H1#specialized-displays-in-windows-10-enterprise-and-windows-10-pro-for-workstations)
 - Windows PowerShell 5.1.
 - Permisos de administrador para instalar y desinstalar.
 - Una GPU, un controlador, una barra o receptor AV y una conexión HDMI compatibles con esta configuración.
@@ -81,7 +81,7 @@ Get-ScheduledTask -TaskName WakeSoundbar
 Get-ScheduledTaskInfo -TaskName WakeSoundbar
 ```
 
-Los archivos instalados están en `%ProgramData%\WakeSoundbar`. WakeSoundbar no crea archivos de registro; una ejecución manual muestra el resultado en la terminal.
+%ProgramData%\WakeSoundbar: `install.log`: prueba de hardware; `last-run.log`: última tarea. Se sobrescriben; elimina datos privados antes de compartir.
 
 Al abrir una incidencia, incluye la versión de Windows, la GPU y su controlador, el modelo de la barra o receptor y cómo están conectados los cables HDMI. No publiques identificadores de monitor ni otros datos privados del sistema.
 
@@ -116,7 +116,7 @@ Seleccionar directamente un destino conocido:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -StableMonitorId RSR66621_0C_07E5_C6
 ```
 
-Los códigos de salida son `0` para éxito o ninguna acción necesaria, `1` para errores de inicio o de plataforma y `2` si se encontró un destino pero no se pudo activar.
+`0`: todos activados; `1`: error de inicio/configuración; `2`: algún destino falló; `3`: ningún destino apto.
 
 ## Cómo funciona
 

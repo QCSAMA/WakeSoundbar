@@ -7,16 +7,18 @@ ad-hoc files from an old release archive.
 
 ## Files
 
-The Chinese release contains exactly these five files under one root directory:
+The Chinese release contains exactly these six files under one root directory:
 
 1. `WakeSoundbar.ps1`
 2. `install.bat`
 3. `uninstall.bat`
 4. `README.md`
 5. `LICENSE`
+6. `Setup-WakeSoundbar.ps1`
 
 The first four are maintained in `locales/zh-CN/`. `LICENSE` always comes from
-the repository root.
+the repository root. `Setup-WakeSoundbar.ps1` also comes from the repository root.
+It is shared setup logic, with English diagnostic messages, not a translated copy.
 
 ## Synchronization Rule
 
@@ -61,20 +63,19 @@ a BOM so Windows PowerShell 5.1 reads Chinese text correctly.
 From the repository root on Windows:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Build-CNRelease.ps1 -Version 1.0.0
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Build-CNRelease.ps1 -Version 1.1.0
 ```
 
-The command writes `dist/WakeSoundbar-v1.0.0-CN.zip`. It checks the batch-file
+The command writes `dist/WakeSoundbar-v1.1.0-CN.zip`. It checks the batch-file
 encoding contract, verifies the Chinese PowerShell script with Windows
-PowerShell 5.1, and verifies the ZIP has one root directory and exactly five
-files.
+PowerShell 5.1, and verifies the ZIP has one root directory and exactly six files.
 
 Before publishing a changed Chinese package, run these manual checks on a real
 Chinese Windows console:
 
 1. Extract the ZIP, then run `install.bat` from both Explorer and PowerShell.
-2. Confirm Chinese status text is readable, no text is interpreted as a command,
-   and the window waits for a keypress after success or failure.
+2. Confirm localized runtime output is readable, shared setup diagnostics use
+   English, and the window waits for a keypress after success or failure.
 3. Confirm the scheduled task belongs to the current interactive user.
 4. Run `uninstall.bat` and confirm it removes the task and installation folder.
 5. Perform a real restart-and-logon test when runtime behavior changed.

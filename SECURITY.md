@@ -5,7 +5,10 @@ only to install or remove its scheduled task and files.
 
 Do not include serial numbers, monitor identifiers, or private system
 information in a public issue. Terminal output may contain adapter and target
-identifiers.
+identifiers. `install.log` records setup testing; `last-run.log` is overwritten
+by each scheduled execution. Transcripts may also contain account names, SIDs
+and local paths. Redact them before sharing. Only Administrators and SYSTEM
+may write the installation directory because the task runs elevated.
 
 ## Reporting
 

@@ -56,15 +56,20 @@ WakeSoundbar 自动做的，就是这一步。每次登录时，它找到被移�
 到这里就装好了。以后每次登录这个 Windows 账户，WakeSoundbar 都会自动运行。
 
 请登录实际使用 WakeSoundbar 的管理员账户再安装。如果 Windows 权限窗口要求输入
-另一个管理员账户，自动任务就会建到那个账户名下。
+另一个管理员账户，安装器会停止，避免将任务绑定到错误的桌面用户。安装器不会修改账户名。
 
 ## 系统要求
 
-- Windows 11，这是目前实测过的平台。
-- Windows 10 1809 或更高版本也有可能可用。
+- Windows 版本类别和显示驱动必须实际提供 **从桌面删除显示器**。
+- 本机实测为 Windows 11 专业工作站版；其他组合尚未验证。
 - Windows PowerShell 5.1。
 - 安装和卸载时需要管理员权限。
 - 显卡、驱动、回音壁或功放以及 HDMI 连接本身需要支持这种接法。
+
+微软在 [Windows 10 20H1 文档](https://learn.microsoft.com/en-us/previous-versions/windows-insider/archive/new-in-20H1#specialized-displays-in-windows-10-enterprise-and-windows-10-pro-for-workstations)
+中已将这个选项列为 Enterprise（企业版）和 Pro for Workstations（专业工作站版）功能。
+它早于 Windows 11 24H2，并非从 24H2 才出现。不要假定家庭版或普通专业版提供该选项。
+底层 API 的 Windows 10 1809 最低要求，不代表该版本的设置界面一定有这个选项。
 
 最后能不能正常工作，仍然取决于硬件和显卡驱动。一台电脑成功，不代表所有机器
 都会得到同样结果。
@@ -91,8 +96,14 @@ Get-ScheduledTask -TaskName WakeSoundbar
 Get-ScheduledTaskInfo -TaskName WakeSoundbar
 ```
 
-安装文件位于 `%ProgramData%\WakeSoundbar`。WakeSoundbar 不会生成日志文件。
-手动运行时，结果会直接显示在终端中。
+安装文件位于 `%ProgramData%\WakeSoundbar`。`install.log` 保存安装时的硬件测试，
+`last-run.log` 保存最近一次计划任务输出，每次覆盖。日志可能含显示器 ID 和账户信息，
+公开提交前请脱敏。手动运行默认只输出到终端，使用 `-LogPath` 可指定日志。
+
+安装器先验证硬件，再替换部署；后续失败会回滚旧脚本、目标选择和任务。只有真实计划任务
+运行成功才报告安装成功。登录时延迟 30 秒，失败后每隔 1 分钟重试，最多 2 次。
+账户改名或重建后，请重新登录，再运行 `install.bat`。手动或任务测试成功后，仍需重启登录
+检查实际回音壁是否可用。
 
 提交 Issue 时，请写清 Windows 版本、显卡和驱动、回音壁或功放型号，以及 HDMI
 具体怎么接。显示器 ID 和其他私人系统信息不要贴到公开 Issue。
@@ -129,8 +140,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -Incl
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -StableMonitorId RSR66621_0C_07E5_C6
 ```
 
-退出码：`0` 表示成功或无需操作，`1` 表示启动或系统错误，`2` 表示找到了目标，
-但没有成功激活。
+退出码：`0` 表示所有选定目标均激活成功；`1` 表示启动、配置或系统错误；
+`2` 表示一个或多个选定目标激活失败；`3` 表示未找到符合条件的目标。
 
 ## 工作原理
 

@@ -12,62 +12,45 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v5
 
-      - name: Parse PowerShell
-        shell: pwsh
+      - name: Parse every PowerShell source
+        shell: powershell
         run: |
-          $tokens = $null
-          $errors = $null
-          [System.Management.Automation.Language.Parser]::ParseFile(
-            (Join-Path $PWD 'WakeSoundbar.ps1'),
-            [ref]$tokens,
-            [ref]$errors
-          ) | Out-Null
-          if ($errors.Count -gt 0) {
-            $errors | ForEach-Object { Write-Error $_.Message }
-            exit 1
+          Get-ChildItem -Recurse -Filter *.ps1 | Where-Object { $_.FullName -notmatch '\\dist\\' } | ForEach-Object {
+            $tokens = $null; $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors.Count) { throw ($errors.Message -join '; ') }
           }
 
       - name: Run PSScriptAnalyzer
         shell: pwsh
         run: |
           Install-Module PSScriptAnalyzer -Scope CurrentUser -Force -ErrorAction Stop
-          $findings = Invoke-ScriptAnalyzer -Path .\WakeSoundbar.ps1 -Severity Error
-          if ($findings) {
-            $findings | Format-List | Out-String | Write-Error
-            exit 1
-          }
+          $findings = @(
+            Invoke-ScriptAnalyzer -Path .\WakeSoundbar.ps1 -Severity Error
+            Invoke-ScriptAnalyzer -Path .\Setup-WakeSoundbar.ps1 -Severity Error
+            Invoke-ScriptAnalyzer -Path .\locales\zh-CN\WakeSoundbar.ps1 -Severity Error
+          )
+          if ($findings) { throw ($findings | Out-String) }
 
-      - name: Enforce ASCII source and English docs
+      - name: Enforce ASCII outside translations
         shell: pwsh
         run: |
-          $localizedFiles = @(
-            'README.zh-CN.md',
-            'README.zh-TW.md',
-            'README.es.md',
-            'README.pt-BR.md',
-            'README.de.md',
-            'README.fr.md',
-            'README.ja.md',
-            'README.ko.md',
-            'README.ru.md',
-            'locales/zh-CN/README.md',
-            'locales/zh-CN/WakeSoundbar.ps1'
-          )
-          $files = Get-ChildItem -File -Recurse | Where-Object {
-            $_.FullName -notmatch '\\\.git\\' -and $_.Extension -in @('.ps1', '.bat', '.md', '.txt', '.yml')
-          }
-          foreach ($file in $files) {
-            $relativePath = $file.FullName.Substring($PWD.Path.Length + 1).Replace('\', '/')
-            if ($localizedFiles -contains $relativePath) {
-              continue
-            }
-            $bytes = [IO.File]::ReadAllBytes($file.FullName)
-            if ($bytes | Where-Object { $_ -gt 127 }) {
-              Write-Error ("Non-ASCII byte found in {0}" -f $file.FullName)
-              exit 1
+          Get-ChildItem -File -Recurse | Where-Object {
+            $_.FullName -notmatch '\\\.git\\|\\dist\\' -and $_.Extension -in @('.ps1', '.bat', '.md', '.txt', '.yml')
+          } | ForEach-Object {
+            $relative = [IO.Path]::GetRelativePath($PWD, $_.FullName).Replace('\', '/')
+            $translation = $_.Name -match '^README\.[a-z]{2}(-[A-Z]{2})?\.md$' -or $relative -in @('locales/zh-CN/README.md', 'locales/zh-CN/WakeSoundbar.ps1')
+            if (-not $translation -and ([IO.File]::ReadAllBytes($_.FullName) | Where-Object { $_ -gt 127 })) {
+              throw "Non-ASCII source: $relative"
             }
           }
 
-      - name: Build Chinese release archive
-        shell: pwsh
-        run: .\tools\Build-CNRelease.ps1 -Version 1.0.0
+      - name: Runtime and setup regression tests
+        shell: powershell
+        run: |
+          & .\tests\Test-Runtime.ps1
+          & .\tests\Test-Setup.ps1
+
+      - name: Verify release packages
+        shell: powershell
+        run: .\tools\Build-Release.ps1 -Version 1.1.0

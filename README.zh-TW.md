@@ -45,12 +45,12 @@ WakeSoundbar 自動完成這個最煩人的步驟。登入時，它會找到被�
 
 這樣就完成了。之後每次登入這個 Windows 帳戶，WakeSoundbar 都會自動執行。
 
-請在實際使用 WakeSoundbar 的系統管理員帳戶中安裝。如果 Windows 要求輸入另一個系統管理員的認證，排程工作會建立在那個帳戶下。
+請以目前桌面的系統管理員帳戶安裝，提升權限後帳戶不同會停止；不會修改帳戶名稱。
 
 ## 系統需求
 
-- Windows 11（已測試）。
-- Windows 10 1809 或更新版本也可能可用。
+- 必須提供「從桌面移除顯示器」；本機測試為 Windows 11 專業工作站版。
+- 此功能早在 Windows 10 20H1 的 Enterprise / Pro for Workstations 已存在，並非 24H2 才提供。 [Microsoft](https://learn.microsoft.com/en-us/previous-versions/windows-insider/archive/new-in-20H1#specialized-displays-in-windows-10-enterprise-and-windows-10-pro-for-workstations)
 - Windows PowerShell 5.1。
 - 安裝和移除時需要系統管理員權限。
 - 顯示卡、驅動程式、Soundbar 或 AV 擴大機，以及 HDMI 連線必須支援這種接法。
@@ -79,7 +79,7 @@ Get-ScheduledTask -TaskName WakeSoundbar
 Get-ScheduledTaskInfo -TaskName WakeSoundbar
 ```
 
-安裝檔案位於 `%ProgramData%\WakeSoundbar`。WakeSoundbar 不會建立記錄檔；手動執行時，結果會直接顯示在終端機中。
+%ProgramData%\WakeSoundbar: `install.log` 記錄硬體測試，`last-run.log` 記錄最近一次排程執行；每次覆寫，分享前請移除私人資訊。
 
 回報問題時，請提供 Windows 版本、顯示卡和驅動程式、Soundbar 或 AV 擴大機型號，以及 HDMI 的接法。不要在公開 Issue 中貼出顯示器 ID 或其他私人系統資訊。
 
@@ -114,7 +114,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -Incl
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -StableMonitorId RSR66621_0C_07E5_C6
 ```
 
-結束代碼：`0` 表示成功或不需要操作，`1` 表示啟動或平台錯誤，`2` 表示找到目標但無法啟用。
+`0` 全部成功；`1` 啟動或設定錯誤；`2` 至少一個目標失敗；`3` 無符合條件的目標。
 
 ## 工作原理
 

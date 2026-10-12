@@ -46,9 +46,13 @@ indefinitely.
 
 ### R5: Installer
 
-The installer MUST be idempotent, register the task for the installing
-interactive user at highest privilege, verify task registration, and return a
-non-zero code on failure.
+The installer MUST be idempotent and reject elevation into a different desktop
+account. It MUST verify hardware before replacement and verify a fresh scheduled
+execution before reporting success. It MUST restore the old script, selection
+and task on failure, retaining backups if recovery fails. It MUST NOT rename
+accounts. The task MUST use the interactive user at highest privilege, delay
+logon execution 30 seconds, and retry failures twice at one-minute intervals.
+Ordinary users MUST NOT have write access to installed executable scripts.
 
 ### R6: Uninstaller
 
@@ -70,7 +74,22 @@ message and wait for a keypress before the visible command window exits.
 The Simplified Chinese release MUST be derived from the generic implementation
 without a separate logic branch. Its batch wrappers MUST remain ASCII-only so
 Chinese console text cannot be parsed as batch commands. Its release archive
-MUST contain one root directory and exactly the documented five files.
+MUST contain one root directory and exactly the documented six files, including
+the shared Setup-WakeSoundbar.ps1 from the repository root.
+
+### R10: Observable failures
+
+Exit code 0 MUST mean every selected target activated. Missing targets MUST
+return 3, and partial activation MUST return 2. Empty saved selections MUST
+fail explicitly. Retries MUST re-enumerate targets. Installed tasks MUST write
+a bounded last-run transcript. Logs MAY contain private identifiers.
+
+### R11: Compatibility claims
+
+Documentation MUST distinguish the display API minimum from availability of the
+Specialized Display Settings option and from actual hardware validation.
+Microsoft documented the option for Enterprise / Pro for Workstations in Windows
+10 20H1; documentation MUST NOT claim it first appeared in Windows 11 24H2.
 
 ## Non-goals
 

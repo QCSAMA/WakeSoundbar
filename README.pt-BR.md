@@ -47,12 +47,12 @@ Ele foi feito para PCs de jogos e HTPCs que mantêm 4K, HDR, alta taxa de atuali
 
 Pronto. O WakeSoundbar será executado sempre que esta conta do Windows entrar no sistema.
 
-Instale usando a conta de administrador que realmente usará o programa. Se o Windows pedir as credenciais de outro administrador, a tarefa automática será criada para essa outra conta.
+Use a conta administradora do desktop atual; outra conta elevada interrompe a instalação. Nenhuma conta é renomeada.
 
 ## Requisitos
 
-- Windows 11 (testado).
-- O Windows 10 versão 1809 ou mais recente também pode funcionar.
+- Remove display from desktop deve estar disponível. Teste local: Windows 11 Pro for Workstations.
+- Documentado desde Windows 10 20H1 para Enterprise / Pro for Workstations, antes do 24H2. [Microsoft](https://learn.microsoft.com/en-us/previous-versions/windows-insider/archive/new-in-20H1#specialized-displays-in-windows-10-enterprise-and-windows-10-pro-for-workstations)
 - Windows PowerShell 5.1.
 - Permissão de administrador para instalar e desinstalar.
 - GPU, driver, soundbar ou receiver AV e conexão HDMI compatíveis com essa configuração.
@@ -81,7 +81,7 @@ Get-ScheduledTask -TaskName WakeSoundbar
 Get-ScheduledTaskInfo -TaskName WakeSoundbar
 ```
 
-Os arquivos instalados ficam em `%ProgramData%\WakeSoundbar`. O WakeSoundbar não cria arquivos de log; uma execução manual mostra o resultado no terminal.
+%ProgramData%\WakeSoundbar: `install.log`: teste de hardware; `last-run.log`: última tarefa. São sobrescritos; remova dados privados antes de compartilhar.
 
 Ao abrir uma issue, informe a versão do Windows, a GPU e o driver, o modelo da soundbar ou receiver e como os cabos HDMI estão ligados. Não publique IDs de monitor nem outros dados privados do sistema.
 
@@ -116,7 +116,7 @@ Para selecionar diretamente um destino conhecido:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -StableMonitorId RSR66621_0C_07E5_C6
 ```
 
-Os códigos de saída são `0` para sucesso ou nenhuma ação necessária, `1` para erro de inicialização ou da plataforma e `2` quando um destino foi encontrado, mas não pôde ser ativado.
+`0`: todos ativados; `1`: erro de início/configuração; `2`: algum destino falhou; `3`: nenhum destino elegível.
 
 ## Como funciona
 

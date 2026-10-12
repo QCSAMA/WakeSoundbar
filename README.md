@@ -67,16 +67,21 @@ to either a dedicated GPU or integrated graphics.
 That is it. WakeSoundbar will now run whenever this Windows account logs on.
 
 Install it while signed in to the administrator account that will use it. If
-Windows asks for credentials for a different administrator, the automatic task
-will be created for that account instead.
+Windows asks for credentials for a different administrator, setup stops instead
+of registering the task for the wrong desktop user. Setup never renames accounts.
 
 ## Requirements
 
-- Windows 11 (tested).
-- Windows 10 version 1809 or newer may work as well.
+- A Windows edition and display driver that expose **Remove display from desktop**.
+- Tested locally on Windows 11 Pro for Workstations. Other combinations are unverified.
 - Windows PowerShell 5.1.
 - Administrator access for installation and removal.
 - A GPU, driver, soundbar or AVR, and HDMI connection that support this setup.
+
+Microsoft documents this Specialized Display option for Windows 10 Enterprise
+and Pro for Workstations in its [20H1 documentation](https://learn.microsoft.com/en-us/previous-versions/windows-insider/archive/new-in-20H1#specialized-displays-in-windows-10-enterprise-and-windows-10-pro-for-workstations).
+It predates Windows 11 24H2. Do not assume Home or ordinary Pro exposes the option.
+The display API minimum (Windows 10 1809) does not guarantee the Settings option.
 
 Compatibility ultimately depends on the hardware and display driver. Success
 on one PC does not guarantee the same result on every system.
@@ -103,8 +108,16 @@ Get-ScheduledTask -TaskName WakeSoundbar
 Get-ScheduledTaskInfo -TaskName WakeSoundbar
 ```
 
-Installed files are stored in `%ProgramData%\WakeSoundbar`. WakeSoundbar does
-not create log files. A manual run prints the result in the terminal.
+Installed files are stored in `%ProgramData%\WakeSoundbar`. `install.log` records
+the initial hardware test; `last-run.log` records the latest scheduled execution.
+Logs are overwritten each run and may include private monitor IDs and account details.
+Manual runs log only when `-LogPath` is supplied.
+
+Setup tests the hardware before replacement, rolls back files and the old task on
+failure, and verifies one real scheduled execution before reporting success.
+Logon execution waits 30 seconds and retries failures twice at one-minute intervals.
+After account rename/recreation, sign in again and rerun `install.bat`.
+A successful manual/task run still needs a real restart-and-logon hardware check.
 
 When opening an issue, include your Windows version, GPU and driver, soundbar
 or AVR model, and how the HDMI cables are connected. Leave monitor IDs and
@@ -142,8 +155,9 @@ To select one known target directly:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WakeSoundbar.ps1 -StableMonitorId RSR66621_0C_07E5_C6
 ```
 
-Exit codes are `0` for success or no action needed, `1` for startup or platform
-errors, and `2` when a target was found but could not be activated.
+Exit codes: `0` means all selected targets activated; `1` means a startup,
+configuration or platform error; `2` means one or more selected targets failed;
+`3` means no eligible targets were found.
 
 ## How It Works
 

@@ -30,7 +30,9 @@ param(
 
     [switch]$InteractiveSelection,
 
-    [switch]$NoSleep
+    [switch]$NoSleep,
+
+    [string]$LogPath
 )
 
 Set-StrictMode -Version Latest
@@ -40,6 +42,7 @@ $script:ExitCodes = @{
     Success = 0
     InitializationFailure = 1
     TargetFailure = 2
+    NoTarget = 3
 }
 
 function Write-Status {
@@ -94,7 +97,7 @@ function Invoke-TargetWake {
     if ($acquireResult.ErrorCode -ne $success) {
         return [pscustomobject]@{
             Succeeded = $false
-            Retryable = $false
+            Retryable = $acquireResult.ErrorCode.ToString() -in @('TargetStale', 'TargetAccessDenied', 'UnknownFailure')
             Status = $acquireResult.ErrorCode.ToString()
             Detail = Get-AcquireErrorDescription $acquireResult.ErrorCode
         }
@@ -114,22 +117,29 @@ function Invoke-TargetWake {
     }
 }
 
-$selectionPath = Join-Path $PSScriptRoot 'target-id.txt'
-$savedTargetId = $null
-if ($null -eq $StableMonitorId -and -not $InteractiveSelection -and (Test-Path -LiteralPath $selectionPath)) {
-    $savedTargetId = (Get-Content -LiteralPath $selectionPath -Raw).Trim()
-    if (-not [string]::IsNullOrWhiteSpace($savedTargetId)) {
-        $StableMonitorId = @($savedTargetId)
-        Write-Status ('Using saved StableMonitorId {0}.' -f $savedTargetId)
-    }
-}
-
+$transcribing = $false
 $manager = $null
 $wokenCount = 0
 $candidateCount = 0
 $failureCount = 0
 
 try {
+    if (-not [string]::IsNullOrWhiteSpace($LogPath)) {
+        Start-Transcript -LiteralPath $LogPath -Force | Out-Null
+        $transcribing = $true
+        Write-Status ('Started {0:o}; SID {1}; session {2}.' -f (Get-Date), [Security.Principal.WindowsIdentity]::GetCurrent().User.Value, [Diagnostics.Process]::GetCurrentProcess().SessionId)
+    }
+    $selectionPath = Join-Path $PSScriptRoot 'target-id.txt'
+    $savedTargetId = $null
+    if ($null -eq $StableMonitorId -and -not $InteractiveSelection -and (Test-Path -LiteralPath $selectionPath)) {
+        $savedTargetId = [IO.File]::ReadAllText($selectionPath).Trim()
+        if ([string]::IsNullOrWhiteSpace($savedTargetId)) { throw 'Saved target ID is empty. Re-run install.bat to select the device.' }
+        if (-not [string]::IsNullOrWhiteSpace($savedTargetId)) {
+            $StableMonitorId = @($savedTargetId)
+            Write-Status ('Using saved StableMonitorId {0}.' -f $savedTargetId)
+        }
+    }
+
     if ([Environment]::OSVersion.Version.Build -lt 17763) {
         throw 'Windows 10 version 1809 (build 17763) or newer is required.'
     }
@@ -139,6 +149,7 @@ try {
         Start-Sleep -Milliseconds $StartupDelayMilliseconds
     }
 
+    Write-Status 'Initializing display APIs.'
     Get-DisplayManagerType
     $manager = [Windows.Devices.Display.Core.DisplayManager]::Create(
         [Windows.Devices.Display.Core.DisplayManagerOptions]::None
@@ -148,6 +159,7 @@ try {
     $candidateTargets = @()
 
     for ($scanAttempt = 0; $scanAttempt -le $RetryCount; $scanAttempt++) {
+        Write-Status ('Enumerating targets (scan {0}).' -f ($scanAttempt + 1))
         $targets = @($manager.GetCurrentTargets())
         $candidateTargets = @($targets | Where-Object {
             $_.IsConnected -and
@@ -163,6 +175,14 @@ try {
         Write-Status ('No eligible targets in scan {0}; waiting for the display stack to settle.' -f ($scanAttempt + 1)) 'WARN'
         if (-not $NoSleep -and $RetryDelayMilliseconds -gt 0) {
             Start-Sleep -Milliseconds $RetryDelayMilliseconds
+        }
+    }
+
+    if ($hasStableMonitorFilter -and $candidateTargets.Count -gt 0) {
+        $missingIds = @($StableMonitorId | Where-Object { $_ -notin @($candidateTargets.StableMonitorId) })
+        if ($missingIds.Count -gt 0) {
+            Write-Status 'Some explicitly selected targets are unavailable. Reconnect them or re-run install.bat.' 'ERROR'
+            exit $script:ExitCodes.TargetFailure
         }
     }
 
@@ -211,7 +231,19 @@ try {
         $targetSucceeded = $false
         for ($attempt = 0; $attempt -le $RetryCount; $attempt++) {
             try {
-                $result = Invoke-TargetWake -Manager $manager -Target $target
+                # A retry must use a fresh snapshot: display changes invalidate targets.
+                $fresh = @($manager.GetCurrentTargets() | Where-Object {
+                    $_.IsConnected -and -not $_.IsStale -and
+                    ($IncludeStandardTargets -or $_.UsageKind -eq $specialPurpose) -and
+                    $(if ([string]::IsNullOrWhiteSpace($target.StableMonitorId)) {
+                        $_.Adapter.Id -eq $target.Adapter.Id -and $_.AdapterRelativeId -eq $target.AdapterRelativeId
+                    } else { $_.StableMonitorId -eq $target.StableMonitorId })
+                })
+                if ($fresh.Count -eq 1) {
+                    $result = Invoke-TargetWake -Manager $manager -Target $fresh[0]
+                } else {
+                    $result = [pscustomobject]@{ Succeeded = $false; Retryable = $true; Detail = 'Target is missing, stale or ambiguous.' }
+                }
                 if ($result.Succeeded) {
                     Write-Status ('SUCCESS: activated target {0} (attempt {1}).' -f $targetLabel, ($attempt + 1))
                     $wokenCount++
@@ -239,10 +271,11 @@ try {
     }
 
     if ($candidateCount -eq 0) {
-        Write-Status 'No eligible SpecialPurpose targets found; nothing to activate.' 'WARN'
+        Write-Status 'No eligible SpecialPurpose targets found. Check device power, saved ID, Windows edition and Remove display from desktop.' 'WARN'
     }
     Write-Status ('Completed. Candidates: {0}; activated: {1}; failed: {2}.' -f $candidateCount, $wokenCount, $failureCount)
-    if ($failureCount -gt 0 -and $wokenCount -eq 0) {
+    if ($candidateCount -eq 0) { exit $script:ExitCodes.NoTarget }
+    if ($failureCount -gt 0) {
         exit $script:ExitCodes.TargetFailure
     }
     exit $script:ExitCodes.Success
@@ -257,4 +290,5 @@ try {
             Write-Status ('DisplayManager.Dispose failed: {0}' -f $_.Exception.Message) 'WARN'
         }
     }
+    if ($transcribing) { try { Stop-Transcript | Out-Null } catch { Write-Warning $_.Exception.Message } }
 }
