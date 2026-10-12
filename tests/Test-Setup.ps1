@@ -36,6 +36,9 @@ function Get-CimInstance { param($ClassName)
     if ($env:WakeSoundbarTestScenario -eq 'wrong-user') { $user = 'NT AUTHORITY\SYSTEM' }
     [pscustomobject]@{UserName=$user}
 }
+
+# Expected failing fixtures must not leave a native failure status for CI hosts.
+$global:LASTEXITCODE = 0
 function Get-Service { param($Name) [pscustomobject]@{Status='Running'} }
 function New-ScheduledTaskAction { param($Execute,$Argument,$WorkingDirectory) [pscustomobject]@{Execute=$Execute;Arguments=$Argument;WorkingDirectory=$WorkingDirectory} }
 function New-ScheduledTaskTrigger { param([switch]$AtLogOn,$User) [pscustomobject]@{UserId=$User;Delay=$null} }
