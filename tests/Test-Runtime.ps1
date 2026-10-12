@@ -22,9 +22,6 @@ function Invoke-TargetWake {
     $ok = $Target.StableMonitorId -ne 'B' -or $script:Scenario -ne 'partial'
     return [pscustomobject]@{ Succeeded = $ok; Retryable = $false; Detail = 'fixture result' }
 }
-
-# Expected failing fixtures must not leave a native failure status for CI hosts.
-$global:LASTEXITCODE = 0
 '@
             }
             $source = $source.Replace($node.Extent.Text, $replacement)
@@ -79,3 +76,6 @@ $script:FixtureManager | Add-Member ScriptMethod Dispose { }
         Remove-Item -LiteralPath $temp -Recurse -Force
     }
 }
+
+# Expected failing fixtures must not leave a native failure status for CI hosts.
+$global:LASTEXITCODE = 0
